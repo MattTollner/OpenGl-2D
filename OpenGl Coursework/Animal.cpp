@@ -5,9 +5,9 @@ Animal::Animal()
 {
 }
 
-Animal::Animal(glm::vec2 pos, glm::vec2 size, Texture2D sprite) : Position(0, 0), Size(1, 1),  Colour(.5f), Rotation(0.0f), Sprite()
+Animal::Animal(glm::vec2 pos, glm::vec2 size, Texture2D sprite) : Position(50, 50), Size(1, 1),  Colour(.5f), Rotation(0.0f), Sprite()
 {
-	
+	this->Colour = glm::vec3(0.5f, 0.5f, 0.5f);
 }
 
 

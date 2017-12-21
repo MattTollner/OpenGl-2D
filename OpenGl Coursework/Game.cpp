@@ -158,8 +158,16 @@ void Game::ProcessInput(GLfloat dt)
 			}
 		}
 		if (this->Keys[GLFW_KEY_SPACE])
-			//Ball->MoveToPos = glm::vec2(400.0f, 300.0f);
+		{
 			Ball->Stuck = false;
+
+			for (auto animal = animals.begin(); animal != animals.end(); ++animal)
+			{
+				animal->NewPos = glm::vec2(400.0f, 300.0f);
+			}
+		}
+				
+
 	}
 }
 
@@ -214,11 +222,25 @@ void Game::ResetPlayer()
 
 // Collision detection
 GLboolean CheckCollision(GameObject &one, GameObject &two);
+GLboolean CheckCollision(Animal &one, Animal&two);
 Collision CheckCollision(BallObject &one, GameObject &two);
 Direction VectorDirection(glm::vec2 closest);
 
 void Game::DoCollisions()
 {
+
+	/*for (Animal &animal : this->Levels[this->Level].Bricks)
+	{
+		if (!box.Destroyed)
+		{
+			if (CheckCollision(*Ball, box))
+			{
+				if (!box.IsSolid)
+					box.Destroyed = GL_TRUE;
+			}
+		}
+	}*/
+
 	for (GameObject &box : this->Levels[this->Level].Bricks)
 	{
 		if (!box.Destroyed)
@@ -286,6 +308,11 @@ GLboolean CheckCollision(GameObject &one, GameObject &two) // AABB - AABB collis
 		two.Position.y + two.Size.y >= one.Position.y;
 	// Collision only if on both axes
 	return collisionX && collisionY;
+}
+
+GLboolean CheckCollision(Animal & one, Animal & two)
+{
+	return GLboolean();
 }
 
 Collision CheckCollision(BallObject &one, GameObject &two) // AABB - Circle collision

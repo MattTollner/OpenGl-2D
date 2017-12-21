@@ -10,10 +10,13 @@ Predator::Predator()
 	
 }
 
-Predator::Predator(glm::vec2 pos, Texture2D sprite)
+Predator::Predator(glm::vec2 pos, Texture2D sprite) : Animal(pos, glm::vec2(30, 30), sprite)
 {
+	this->Position = pos;
+	this->Sprite = sprite;
+	
 	Size = glm::vec2(30, 30);
-	//this->Colour = glm::vec3(1.0f, 0.0f, 0.0f);
+	this->Colour = glm::vec3(1.0f, 0.0f, 0.0f);
 	GLuint randNum;
 	GLuint randNum2;
 
