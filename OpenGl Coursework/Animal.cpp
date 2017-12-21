@@ -24,7 +24,7 @@ glm::vec2 Animal::MoveTo()
 	if (sqrt(dis.y*dis.y + dis.x * dis.x) < speed)
 	{
 		this->Position.x = NewPos.x;
-		this->Position.y = NewPos.y;
+		this->Position.y = NewPos.y; 
 
 		GLuint randNum;
 		GLuint randNum2;
