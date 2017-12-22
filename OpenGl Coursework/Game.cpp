@@ -20,6 +20,7 @@ std::vector<GameObject> objs;
 std::vector<Animal> animals;
 std::vector<Predator> predators;
 std::vector<Prey> prey;
+GLuint idCount = 0;
 
 
 Game::Game(GLuint width, GLuint height)
@@ -88,7 +89,8 @@ void Game::Init()
 		randNum2 = rand() % 600 + 1;
 		std::cout << "Predator  : " << randNum << " : " << randNum2 << std::endl;
 
-		animals.push_back(Predator(glm::vec2(randNum, randNum2), ResourceManager::GetTexture("face")));
+		animals.push_back(Predator(glm::vec2(randNum, randNum2), ResourceManager::GetTexture("face"), idCount));
+		idCount++;
 	}
 
 	for (unsigned int i = 0; i < 3; i++)
@@ -100,7 +102,8 @@ void Game::Init()
 		randNum2 = rand() % 600 + 1;
 		std::cout << "Prey  : " <<randNum << " : " << randNum2 << std::endl;
 
-		animals.push_back(Prey(glm::vec2(randNum, randNum2), ResourceManager::GetTexture("face")));
+		animals.push_back(Prey(glm::vec2(randNum, randNum2), ResourceManager::GetTexture("face"), idCount));
+		idCount++;
 	}
 }
 
@@ -221,25 +224,46 @@ void Game::ResetPlayer()
 
 
 // Collision detection
-GLboolean CheckCollision(GameObject &one, GameObject &two);
-GLboolean CheckCollision(Animal &one, Animal&two);
+//GLboolean CheckCollision(GameObject &one, GameObject &two);
+GLboolean CheckCollision(Animal &one, Animal &two);
+//GLboolean CheckCollision(std::vector<Animal> &one, std::vector<Animal> &two);
 Collision CheckCollision(BallObject &one, GameObject &two);
 Direction VectorDirection(glm::vec2 closest);
 
 void Game::DoCollisions()
 {
-
-	/*for (Animal &animal : this->Levels[this->Level].Bricks)
+	for (auto& animal : animals)
 	{
-		if (!box.Destroyed)
-		{
-			if (CheckCollision(*Ball, box))
+		
+		for (auto& animal2 : animals) {
+			if (CheckCollision(animal,animal2))
 			{
-				if (!box.IsSolid)
-					box.Destroyed = GL_TRUE;
+				if (animal.id == animal2.id)
+				{
+
+				}
+				else
+				{
+					if (animal.isPrey == animal2.isPrey)
+					{
+						std::cout << "Potential Breed between Prey" << animal.id << " and " << animal2.id <<  std::endl;
+					}
+					if (animal.isPrey != animal2.isPrey)
+					{
+						std::cout << "Potential Kill between" << animal.id << " and " << animal2.id << std::endl;
+					}
+					if (animal.isPrey == false && animal2.isPrey == false)
+					{
+						std::cout << "Potential Between Predators " << animal.id << " and " << animal2.id << std::endl;
+					}
+					
+				}
+				
 			}
 		}
-	}*/
+	}
+	
+
 
 	for (GameObject &box : this->Levels[this->Level].Bricks)
 	{
@@ -311,6 +335,18 @@ GLboolean CheckCollision(GameObject &one, GameObject &two) // AABB - AABB collis
 }
 
 GLboolean CheckCollision(Animal & one, Animal & two)
+{
+	// Collision x-axis?
+	bool collisionX = one.Position.x + one.Size.x >= two.Position.x &&
+		two.Position.x + two.Size.x >= one.Position.x;
+	// Collision y-axis?
+	bool collisionY = one.Position.y + one.Size.y >= two.Position.y &&
+		two.Position.y + two.Size.y >= one.Position.y;
+	// Collision only if on both axes
+	return collisionX && collisionY;
+}
+
+GLboolean CheckCollision(std::vector<Animal>& one, std::vector<Animal>& two)
 {
 	return GLboolean();
 }

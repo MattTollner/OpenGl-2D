@@ -12,7 +12,9 @@ public:
 	//Atributes
 	GLfloat  speed = 1;
 	GLfloat  rot, radian;
+	GLint id;
 	glm::vec2 dis;
+	GLboolean isPrey = false;
 
 	glm::vec2 Position, Size, NewPos;
 	glm::vec3 Colour;

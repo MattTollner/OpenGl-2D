@@ -9,7 +9,7 @@ class Prey : public Animal
 {
 public:
 	Prey();
-	Prey(glm::vec2 pos, Texture2D sprite);
+	Prey(glm::vec2 pos, Texture2D sprite, GLuint id);
 	~Prey();
 };
 

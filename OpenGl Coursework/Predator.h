@@ -9,7 +9,7 @@ class Predator : public Animal
 {
 public:
 	Predator();
-	Predator(glm::vec2 pos, Texture2D sprite);
+	Predator(glm::vec2 pos, Texture2D sprite, GLuint id);
 	~Predator();
 	glm::vec2 MoveTo();
 };
