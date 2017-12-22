@@ -49,3 +49,14 @@ void Animal::Draw(SpriteRenderer &renderer)
 {
 	renderer.DrawSprite(this->Sprite, this->Position, this->Size, this->Rotation, this->Colour);
 }
+
+void Animal::DecraseHunger(GLfloat decraseAmount)
+{
+	this->Hunger -= decraseAmount;
+}
+
+
+GLboolean Animal::Breed()
+{
+	return true;
+}

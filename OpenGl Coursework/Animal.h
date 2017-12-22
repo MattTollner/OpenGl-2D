@@ -13,8 +13,11 @@ public:
 	GLfloat  speed = 1;
 	GLfloat  rot, radian;
 	GLint id;
+	GLfloat Hunger = 10;
+	GLfloat Speed;
 	glm::vec2 dis;
 	GLboolean isPrey = false;
+	GLboolean isReady = true;
 
 	glm::vec2 Position, Size, NewPos;
 	glm::vec3 Colour;
@@ -30,6 +33,8 @@ public:
 	glm::vec2 MoveTo();
 
 	void Draw(SpriteRenderer & renderer);
+	void DecraseHunger(GLfloat decraseAmount);	
+	GLboolean Breed();
 
 
 	

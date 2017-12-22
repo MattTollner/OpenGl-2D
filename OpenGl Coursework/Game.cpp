@@ -22,6 +22,35 @@ std::vector<Predator> predators;
 std::vector<Prey> prey;
 GLuint idCount = 0;
 
+void DeleteAnimal(Animal  animalToDel)
+{
+
+	GLuint cnt = 0;
+
+	for (auto& isAnimal : animals)
+	{
+		if (isAnimal.id == animalToDel.id)
+		{
+			break;
+		}
+		cnt++;
+	}
+
+	//Deletes pray from list
+	animals.erase(animals.begin() + cnt);
+}
+
+GLuint RandomNumberInt(GLuint numLarge, GLuint  numSmall)
+{
+	GLuint randNum;
+
+	randNum = rand() % numLarge + numSmall;
+
+	return randNum;
+
+}
+
+
 
 Game::Game(GLuint width, GLuint height)
 	: State(GAME_ACTIVE), Keys(), Width(width), Height(height)
@@ -93,7 +122,7 @@ void Game::Init()
 		idCount++;
 	}
 
-	for (unsigned int i = 0; i < 3; i++)
+	for (unsigned int i = 0; i < 5; i++)
 	{
 		GLuint randNum;
 		GLuint randNum2;
@@ -128,11 +157,38 @@ void Game::Update(GLfloat dt)
 	for (auto animal = animals.begin(); animal != animals.end(); ++animal)
 	{
 		animal->MoveTo();
+		GLfloat num = RandomNumberInt(3, 2);
+
+		animal->DecraseHunger(num / RandomNumberInt(588, 592));			
 	}
 
+	unsigned i = 0;
+	while (i < animals.size())
+	{
+		if (animals[i].Hunger <= 0)
+		{
+			animals.erase(animals.begin() + i);
+		}
+		else {
+			++i;
+		}
+	}
+	
 	
 
+	/*for (auto& animal : animals)
+	{
+		animal.MoveTo();
+		GLfloat num = RandomNumberInt(3, 2);
 
+		animal.DecraseHunger(num / RandomNumberInt(88,92));
+		if (animal.Hunger <= 0)
+		{
+			std::cout << animal.id << " Animal Dead " << std::endl;
+			
+		}
+	}*/
+	
 }
 
 
@@ -229,36 +285,83 @@ GLboolean CheckCollision(Animal &one, Animal &two);
 //GLboolean CheckCollision(std::vector<Animal> &one, std::vector<Animal> &two);
 Collision CheckCollision(BallObject &one, GameObject &two);
 Direction VectorDirection(glm::vec2 closest);
+void DeleteAnimal(Animal animalToDel);
+GLuint RandomNumberInt(GLuint numLarge, GLuint numSmall);
 
 void Game::DoCollisions()
 {
+
 	for (auto& animal : animals)
-	{
-		
-		for (auto& animal2 : animals) {
+	{		
+		for (auto& animal2 : animals) 
+		{
 			if (CheckCollision(animal,animal2))
 			{
-				if (animal.id == animal2.id)
+				if (animal.id != animal2.id)
 				{
+					if (animal.isPrey == true && animal2.isPrey == true)
+					{
+						//std::cout << "Potential Breed between Prey" << animal.id << " and " << animal2.id <<  std::endl;
+						if (animal.Breed())
+						{
+							if (animal.isReady && animal2.isReady)
+							{
+								GLuint randNum;
+								GLuint randNum2;
 
-				}
-				else
-				{
-					if (animal.isPrey == animal2.isPrey)
-					{
-						std::cout << "Potential Breed between Prey" << animal.id << " and " << animal2.id <<  std::endl;
+								randNum = rand() % 800 + 1;
+								randNum2 = rand() % 600 + 1;
+								animals.push_back(Prey(glm::vec2(randNum, randNum2), ResourceManager::GetTexture("face"), idCount));
+								idCount++;
+								animal.isReady = false;
+								animal2.isReady = false;
+								std::cout << animal.id << " and " << animal2.id << " Prey Spawned" << std::endl;
+							}
+
+						}
+
 					}
-					if (animal.isPrey != animal2.isPrey)
+					if (animal.isPrey == true && animal2.isPrey == false)
 					{
-						std::cout << "Potential Kill between" << animal.id << " and " << animal2.id << std::endl;
+						if (animal2.Hunger < 6)
+						{
+							animal2.Hunger = 10;
+							DeleteAnimal(animal);
+						}
+						
 					}
 					if (animal.isPrey == false && animal2.isPrey == false)
 					{
-						std::cout << "Potential Between Predators " << animal.id << " and " << animal2.id << std::endl;
+						GLuint stupidCount = 2;
+						if (animal.id < 10 && animal2.id < 10)
+						{
+							if (stupidCount % 2 == 0) 
+							{
+								if (animal.Breed())
+								{
+									if (animal.isReady && animal2.isReady)
+									{
+										GLuint randNum;
+										GLuint randNum2;
+
+										randNum = rand() % 800 + 1;
+										randNum2 = rand() % 600 + 1;
+										animals.push_back(Predator(glm::vec2(randNum, randNum2), ResourceManager::GetTexture("face"), idCount));
+										idCount++;
+										animal.isReady = false;
+										animal2.isReady = false;
+										std::cout << animal.id << " and " << animal2.id << " Predator Spawned" << "  id count at " << idCount << std::endl;
+										/*for (auto& animalz : animals) {
+											std::cout << animalz.id << std::endl;
+										}*/
+									}
+
+								}								
+							}
+							stupidCount+=2;
+						}
 					}
-					
-				}
-				
+				}		
 			}
 		}
 	}
@@ -346,10 +449,7 @@ GLboolean CheckCollision(Animal & one, Animal & two)
 	return collisionX && collisionY;
 }
 
-GLboolean CheckCollision(std::vector<Animal>& one, std::vector<Animal>& two)
-{
-	return GLboolean();
-}
+
 
 Collision CheckCollision(BallObject &one, GameObject &two) // AABB - Circle collision
 {
@@ -371,6 +471,9 @@ Collision CheckCollision(BallObject &one, GameObject &two) // AABB - Circle coll
 	else
 		return std::make_tuple(GL_FALSE, UP, glm::vec2(0, 0));
 }
+
+
+
 
 // Calculates which direction a vector is facing (N,E,S or W)
 Direction VectorDirection(glm::vec2 target)
@@ -394,5 +497,7 @@ Direction VectorDirection(glm::vec2 target)
 	}
 	return (Direction)best_match;
 }
+
+
 
 
