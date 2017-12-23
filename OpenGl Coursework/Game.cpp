@@ -80,6 +80,7 @@ void Game::Init()
 	ResourceManager::LoadTexture("textures/awesomeface.png", GL_TRUE, "face");
 	ResourceManager::LoadTexture("textures/block.png", GL_FALSE, "block");
 	ResourceManager::LoadTexture("textures/block_solid.png", GL_FALSE, "block_solid");
+	ResourceManager::LoadTexture("textures/tiger.jpeg", GL_FALSE, "tiger");
 	ResourceManager::LoadTexture("textures/paddle.png", true, "paddle");
 	// Set render-specific controls
 	Renderer = new SpriteRenderer(ResourceManager::GetShader("sprite"));
@@ -111,7 +112,7 @@ void Game::Init()
 	}
 
 
-	for (unsigned int i = 0; i < 10; i++)
+	for (unsigned int i = 0; i < 15; i++)
 	{
 		GLuint randNum;
 		GLuint randNum2;
@@ -130,9 +131,9 @@ void Game::Init()
 
 		randNum = rand() % 800 + 1;
 		randNum2 = rand() % 600 + 1;
-		std::cout << "Grass  : " << randNum << " : " << randNum2 << std::endl;
+		std::cout << "Predator  : " << randNum << " : " << randNum2 << std::endl;
 
-		animals.push_back(Predator(glm::vec2(randNum, randNum2), ResourceManager::GetTexture("face"), idCount));
+		animals.push_back(Predator(glm::vec2(randNum, randNum2), ResourceManager::GetTexture("tiger"), idCount));
 		idCount++;
 	}
 
@@ -173,7 +174,8 @@ void Game::Update(GLfloat dt)
 		animal->MoveTo();
 		GLfloat num = RandomNumberInt(3, 2);
 
-		animal->DecraseHunger(num / RandomNumberInt(200, 200));			
+		animal->DecraseHunger(num / RandomNumberInt(200, 200));		
+		animal->DecreaseFertility(0.05f);
 	}
 
 	unsigned i = 0;
@@ -334,9 +336,9 @@ void Game::DoCollisions()
 					if (animal.isPrey == true && animal2.isPrey == true)
 					{
 						//std::cout << "Potential Breed between Prey" << animal.id << " and " << animal2.id <<  std::endl;
-						if (animal.Breed())
+						if (animal.isFemale != animal2.isFemale)
 						{
-							if (animal.isReady && animal2.isReady)
+							if (animal.Fertile <= 0 && animal2.Fertile <= 0)
 							{
 								GLuint randNum;
 								GLuint randNum2;
@@ -345,8 +347,8 @@ void Game::DoCollisions()
 								randNum2 = rand() % 600 + 1;
 								animals.push_back(Prey(glm::vec2(randNum, randNum2), ResourceManager::GetTexture("face"), idCount));
 								idCount++;
-								animal.isReady = false;
-								animal2.isReady = false;
+								animal.Fertile = 30.0f;
+								animal2.Fertile = 30.0f;
 								std::cout << animal.id << " and " << animal2.id << " Prey Spawned" << std::endl;
 							}
 
@@ -386,31 +388,24 @@ void Game::DoCollisions()
 						}
 
 
-						//GLuint stupidCount = 2;
-						//if (animal.id < 10 && animal2.id < 10)
-						//{
-						//	if (stupidCount % 2 == 0) 
-						//	{
-						//		if (animal.Breed())
-						//		{
-						//			if (animal.isReady && animal2.isReady)
-						//			{
-						//				GLuint randNum;
-						//				GLuint randNum2;
+								if (animal.isFemale != animal2.isFemale)
+								{
+									if (animal.Fertile <= 0 && animal2.Fertile <= 0)
+									{
+										GLuint randNum;
+										GLuint randNum2;
 
-						//				randNum = rand() % 800 + 1;
-						//				randNum2 = rand() % 600 + 1;
-						//				animals.push_back(Predator(glm::vec2(randNum, randNum2), ResourceManager::GetTexture("face"), idCount));
-						//				idCount++;
-						//				animal.isReady = false;
-						//				animal2.isReady = false;
-						//				std::cout << animal.id << " and " << animal2.id << " Predator Spawned" << "  id count at " << idCount << std::endl;								
-						//			}
+										randNum = rand() % 800 + 1;
+										randNum2 = rand() % 600 + 1;
+										animals.push_back(Predator(glm::vec2(randNum, randNum2), ResourceManager::GetTexture("face"), idCount));
+										idCount++;
+										animal.Fertile = 30.0f;
+										animal2.Fertile = 30.0f;
+										std::cout << animal.id << " and " << animal2.id << " Predator Spawned" << "  id count at " << idCount << std::endl;								
+									}
 
-						//		}								
-						//	}
-						//	stupidCount+=2;
-						//}
+								}								
+					
 					}
 				}		
 			}

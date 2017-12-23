@@ -23,6 +23,8 @@ Grass::~Grass()
 void Grass::DecreaseGrass(GLfloat amount)
 {
 	this->grassLevel -= amount;
+	//glm::vec3 oldColour = this->Colour;
+	this->Colour.g -= 0.031f;
 }
 
 void Grass::Draw(SpriteRenderer &renderer)

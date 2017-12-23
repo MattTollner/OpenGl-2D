@@ -55,6 +55,11 @@ void Animal::DecraseHunger(GLfloat decraseAmount)
 	this->Hunger -= decraseAmount;
 }
 
+void Animal::DecreaseFertility(GLfloat decreaseAmount)
+{
+	this->Fertile -= decreaseAmount;
+}
+
 
 GLboolean Animal::Breed()
 {

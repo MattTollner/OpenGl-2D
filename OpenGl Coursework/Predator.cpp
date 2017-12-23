@@ -16,7 +16,7 @@ Predator::Predator(glm::vec2 pos, Texture2D sprite, GLuint id)
 	this->Sprite = sprite;
 	this->id = id;
 	Size = glm::vec2(30, 30);
-	this->Colour = glm::vec3(1.0f, 0.0f, 0.0f);
+	this->Colour = glm::vec3(1.0f, 1.0f, 1.0f);
 	GLuint randNum;
 	GLuint randNum2;
 
@@ -24,6 +24,16 @@ Predator::Predator(glm::vec2 pos, Texture2D sprite, GLuint id)
 	randNum2 = rand() % 600 + 1;
 
 	NewPos = glm::vec2(randNum, randNum2);
+
+	randNum = rand() % 2, 1;
+	if (randNum == 1)
+	{
+		this->isFemale = true;
+	}
+	else
+	{
+		this->isFemale = false;
+	}
 }
 
 

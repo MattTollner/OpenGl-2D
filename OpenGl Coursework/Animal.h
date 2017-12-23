@@ -15,6 +15,8 @@ public:
 	GLint id;
 	GLfloat Hunger = 10;
 	GLfloat Speed;
+	GLfloat Fertile = 30;
+	GLboolean isFemale;
 	glm::vec2 dis;
 	GLboolean isPrey = false;
 	GLboolean isReady = true;
@@ -33,7 +35,8 @@ public:
 	glm::vec2 MoveTo();
 
 	void Draw(SpriteRenderer & renderer);
-	void DecraseHunger(GLfloat decraseAmount);	
+	void DecraseHunger(GLfloat decraseAmount);
+	void DecreaseFertility(GLfloat decreaseAmount);
 	GLboolean Breed();
 
 
