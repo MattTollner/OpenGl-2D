@@ -54,6 +54,9 @@
     <ClCompile Include="Prey.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Grass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -87,6 +90,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Prey.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Grass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

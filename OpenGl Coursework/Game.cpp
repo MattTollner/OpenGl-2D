@@ -6,6 +6,7 @@
 #include "Animal.h"
 #include "Predator.h"
 #include "Prey.h"
+#include "Grass.h"
 #include <iostream>
 using namespace std;
 
@@ -18,6 +19,7 @@ GameObject      *Player;
 BallObject      *Ball;
 std::vector<GameObject> objs;
 std::vector<Animal> animals;
+std::vector<Grass> grass;
 std::vector<Predator> predators;
 std::vector<Prey> prey;
 GLuint idCount = 0;
@@ -109,20 +111,32 @@ void Game::Init()
 	}
 
 
-	for (unsigned int i = 0; i < 3; i++)
+	for (unsigned int i = 0; i < 10; i++)
 	{
 		GLuint randNum;
 		GLuint randNum2;
 
 		randNum = rand() % 800 + 1;
 		randNum2 = rand() % 600 + 1;
-		std::cout << "Predator  : " << randNum << " : " << randNum2 << std::endl;
+		std::cout << "Grass  : " << randNum << " : " << randNum2 << std::endl;
+
+		grass.push_back(Grass(glm::vec2(randNum, randNum2), glm::vec2(50,50), ResourceManager::GetTexture("block")));		
+	}
+
+	for (unsigned int i = 0; i < 1; i++)
+	{
+		GLuint randNum;
+		GLuint randNum2;
+
+		randNum = rand() % 800 + 1;
+		randNum2 = rand() % 600 + 1;
+		std::cout << "Grass  : " << randNum << " : " << randNum2 << std::endl;
 
 		animals.push_back(Predator(glm::vec2(randNum, randNum2), ResourceManager::GetTexture("face"), idCount));
 		idCount++;
 	}
 
-	for (unsigned int i = 0; i < 5; i++)
+	for (unsigned int i = 0; i < 10; i++)
 	{
 		GLuint randNum;
 		GLuint randNum2;
@@ -159,7 +173,7 @@ void Game::Update(GLfloat dt)
 		animal->MoveTo();
 		GLfloat num = RandomNumberInt(3, 2);
 
-		animal->DecraseHunger(num / RandomNumberInt(588, 592));			
+		animal->DecraseHunger(num / RandomNumberInt(200, 200));			
 	}
 
 	unsigned i = 0;
@@ -172,23 +186,20 @@ void Game::Update(GLfloat dt)
 		else {
 			++i;
 		}
-	}
-	
-	
+	}	
 
-	/*for (auto& animal : animals)
+	unsigned e = 0;
+	while (e < grass.size())
 	{
-		animal.MoveTo();
-		GLfloat num = RandomNumberInt(3, 2);
-
-		animal.DecraseHunger(num / RandomNumberInt(88,92));
-		if (animal.Hunger <= 0)
+		if (grass[e].grassLevel <= 0)
 		{
-			std::cout << animal.id << " Animal Dead " << std::endl;
-			
+			grass.erase(grass.begin() + e);
 		}
-	}*/
-	
+		else {
+			++e;
+		}
+	}
+		
 }
 
 
@@ -251,6 +262,11 @@ void Game::Render()
 		{
 			animal->Draw(*Renderer);
 		}
+
+		for (auto grasses = grass.begin(); grasses != grass.end(); ++grasses)
+		{
+			grasses->Draw(*Renderer);
+		}
 			
 		// Draw ball
 		Ball->Draw(*Renderer);
@@ -282,6 +298,7 @@ void Game::ResetPlayer()
 // Collision detection
 //GLboolean CheckCollision(GameObject &one, GameObject &two);
 GLboolean CheckCollision(Animal &one, Animal &two);
+GLboolean CheckCollision(Animal &one, Grass &two);
 //GLboolean CheckCollision(std::vector<Animal> &one, std::vector<Animal> &two);
 Collision CheckCollision(BallObject &one, GameObject &two);
 Direction VectorDirection(glm::vec2 closest);
@@ -292,7 +309,22 @@ void Game::DoCollisions()
 {
 
 	for (auto& animal : animals)
-	{		
+	{	
+		for (auto& grasses : grass)
+		{
+			if (CheckCollision(animal, grasses))
+			{
+				if (animal.isPrey)
+				{
+					if (animal.Hunger < 10)
+					{
+						animal.Hunger += 0.25f;
+						grasses.DecreaseGrass(1);					
+					}
+				}
+			}
+		}
+
 		for (auto& animal2 : animals) 
 		{
 			if (CheckCollision(animal,animal2))
@@ -327,44 +359,65 @@ void Game::DoCollisions()
 						{
 							animal2.Hunger = 10;
 							DeleteAnimal(animal);
+							break;
 						}
 						
 					}
 					if (animal.isPrey == false && animal2.isPrey == false)
 					{
-						GLuint stupidCount = 2;
-						if (animal.id < 10 && animal2.id < 10)
+						//Canabalism 
+						if (animal.Hunger < 2 || animal2.Hunger < 2)
 						{
-							if (stupidCount % 2 == 0) 
+							GLuint num = RandomNumberInt(2, 1);
+							if (num == 1)
 							{
-								if (animal.Breed())
-								{
-									if (animal.isReady && animal2.isReady)
-									{
-										GLuint randNum;
-										GLuint randNum2;
-
-										randNum = rand() % 800 + 1;
-										randNum2 = rand() % 600 + 1;
-										animals.push_back(Predator(glm::vec2(randNum, randNum2), ResourceManager::GetTexture("face"), idCount));
-										idCount++;
-										animal.isReady = false;
-										animal2.isReady = false;
-										std::cout << animal.id << " and " << animal2.id << " Predator Spawned" << "  id count at " << idCount << std::endl;
-										/*for (auto& animalz : animals) {
-											std::cout << animalz.id << std::endl;
-										}*/
-									}
-
-								}								
+								std::cout << "Animal One gonna kill animal two" << std::endl;
+								animal.Hunger = 10;
+								DeleteAnimal(animal2);
+								break;
 							}
-							stupidCount+=2;
+							else
+							{
+								std::cout << "Animal Two gonna kill animal One" << std::endl;
+								animal2.Hunger = 10;
+								DeleteAnimal(animal);
+								break;
+							}
 						}
+
+
+						//GLuint stupidCount = 2;
+						//if (animal.id < 10 && animal2.id < 10)
+						//{
+						//	if (stupidCount % 2 == 0) 
+						//	{
+						//		if (animal.Breed())
+						//		{
+						//			if (animal.isReady && animal2.isReady)
+						//			{
+						//				GLuint randNum;
+						//				GLuint randNum2;
+
+						//				randNum = rand() % 800 + 1;
+						//				randNum2 = rand() % 600 + 1;
+						//				animals.push_back(Predator(glm::vec2(randNum, randNum2), ResourceManager::GetTexture("face"), idCount));
+						//				idCount++;
+						//				animal.isReady = false;
+						//				animal2.isReady = false;
+						//				std::cout << animal.id << " and " << animal2.id << " Predator Spawned" << "  id count at " << idCount << std::endl;								
+						//			}
+
+						//		}								
+						//	}
+						//	stupidCount+=2;
+						//}
 					}
 				}		
 			}
 		}
 	}
+
+	
 	
 
 
@@ -438,6 +491,18 @@ GLboolean CheckCollision(GameObject &one, GameObject &two) // AABB - AABB collis
 }
 
 GLboolean CheckCollision(Animal & one, Animal & two)
+{
+	// Collision x-axis?
+	bool collisionX = one.Position.x + one.Size.x >= two.Position.x &&
+		two.Position.x + two.Size.x >= one.Position.x;
+	// Collision y-axis?
+	bool collisionY = one.Position.y + one.Size.y >= two.Position.y &&
+		two.Position.y + two.Size.y >= one.Position.y;
+	// Collision only if on both axes
+	return collisionX && collisionY;
+}
+
+GLboolean CheckCollision(Animal & one, Grass & two)
 {
 	// Collision x-axis?
 	bool collisionX = one.Position.x + one.Size.x >= two.Position.x &&

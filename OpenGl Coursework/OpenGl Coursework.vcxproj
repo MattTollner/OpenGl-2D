@@ -126,6 +126,7 @@
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameLevel.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="Grass.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Predator.cpp" />
     <ClCompile Include="Prey.cpp" />
@@ -140,6 +141,7 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameLevel.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="Grass.h" />
     <ClInclude Include="Predator.h" />
     <ClInclude Include="Prey.h" />
     <ClInclude Include="ResourceManager.h" />
