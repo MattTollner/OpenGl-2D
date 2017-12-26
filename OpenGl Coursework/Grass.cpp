@@ -12,6 +12,7 @@ Grass::Grass(glm::vec2 pos, glm::vec2 size, Texture2D sprite)
 	this->Size = size;
 	this->Colour = glm::vec3(0.0f, 1.0f, 0.0f);
 	this->Sprite = sprite;
+	this->Rotation = 79.0f;
 
 }
 

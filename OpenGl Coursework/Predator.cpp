@@ -16,7 +16,7 @@ Predator::Predator(glm::vec2 pos, Texture2D sprite, GLuint id)
 	this->Sprite = sprite;
 	this->id = id;
 	Size = glm::vec2(30, 30);
-	this->Colour = glm::vec3(1.0f, 1.0f, 1.0f);
+	this->Colour = glm::vec3(1.0f, 0.0f, 0.0f);
 	GLuint randNum;
 	GLuint randNum2;
 
