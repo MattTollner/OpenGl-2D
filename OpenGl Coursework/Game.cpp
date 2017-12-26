@@ -78,8 +78,8 @@ void Game::Init()
 	ResourceManager::LoadTexture("textures/awesomeface.png", GL_TRUE, "face");
 	ResourceManager::LoadTexture("textures/block.png", GL_FALSE, "block");
 	ResourceManager::LoadTexture("textures/grass.jpg", GL_FALSE, "grass");
-	ResourceManager::LoadTexture("textures/tigerC.png", GL_FALSE, "tiger");
-
+	ResourceManager::LoadTexture("textures/tiger.png",	GL_TRUE, "tiger");
+	ResourceManager::LoadTexture("textures/prey.png", GL_TRUE, "prey");
 
 	//Audio Load
 	SoundEngine->play2D("audio/breakout.mp3", GL_TRUE);
@@ -125,7 +125,7 @@ void Game::Init()
 		randNum2 = rand() % 600 + 1;
 		std::cout << "Prey  : " <<randNum << " : " << randNum2 << std::endl;
 
-		animals.push_back(Prey(glm::vec2(randNum, randNum2), ResourceManager::GetTexture("face"), idCount));
+		animals.push_back(Prey(glm::vec2(randNum, randNum2), ResourceManager::GetTexture("prey"), idCount));
 		idCount++;
 	}
 }
@@ -297,7 +297,7 @@ void Game::DoCollisions()
 
 								randNum = rand() % 800 + 1;
 								randNum2 = rand() % 600 + 1;
-								animals.push_back(Prey(glm::vec2(randNum, randNum2), ResourceManager::GetTexture("face"), idCount));
+								animals.push_back(Prey(glm::vec2(randNum, randNum2), ResourceManager::GetTexture("prey"), idCount));
 								SoundEngine->play2D("audio/prey.wav", GL_FALSE);
 								idCount++;
 								animal.Fertile = 30.0f;
@@ -351,8 +351,8 @@ void Game::DoCollisions()
 
 										randNum = rand() % 800 + 1;
 										randNum2 = rand() % 600 + 1;
-										animals.push_back(Predator(glm::vec2(randNum, randNum2), ResourceManager::GetTexture("face"), idCount));
-										//SoundEngine->play2D("audio/roar.wav", GL_TRUE);
+										animals.push_back(Predator(glm::vec2(randNum, randNum2), ResourceManager::GetTexture("tiger"), idCount));
+										SoundEngine->play2D("audio/predator.wav", GL_TRUE);
 										idCount++;
 										animal.Fertile = 30.0f;
 										animal2.Fertile = 30.0f;
