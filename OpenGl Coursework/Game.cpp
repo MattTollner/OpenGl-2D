@@ -56,7 +56,7 @@ GLuint RandomNumberInt(GLuint numLarge, GLuint  numSmall)
 
 
 Game::Game(GLuint width, GLuint height)
-	: State(GAME_ACTIVE), Keys(), Width(width), Height(height)
+	: State(GAME_MENU), Keys(), Width(width), Height(height)
 {
 
 }
@@ -215,13 +215,21 @@ void Game::ProcessInput(GLfloat dt)
 			randNum2 = rand() % 600 + 1;
 
 			animals.push_back(Prey(glm::vec2(randNum, randNum2), ResourceManager::GetTexture("prey"), idCount));
+			idCount++;
 			this->KeysProcessed[GLFW_KEY_P] = GL_TRUE;
 		}
 
 		if (this->Keys[GLFW_KEY_O] && !this->KeysProcessed[GLFW_KEY_O])
 		{			
 
-			animals.pop_back();
+			for (auto& animals : animals)
+			{
+				if (animals.isPrey)
+				{
+					DeleteAnimal(animals);
+					break;
+				}
+			}
 			this->KeysProcessed[GLFW_KEY_O] = GL_TRUE;
 		}
 
@@ -234,19 +242,62 @@ void Game::ProcessInput(GLfloat dt)
 			randNum2 = rand() % 600 + 1;
 
 			animals.push_back(Predator(glm::vec2(randNum, randNum2), ResourceManager::GetTexture("tiger"), idCount));
+			idCount++;
 			this->KeysProcessed[GLFW_KEY_L] = GL_TRUE;
 		}
 
 
 		if (this->Keys[GLFW_KEY_K] && !this->KeysProcessed[GLFW_KEY_K])
 		{
-
-			animals.pop_back();
+			for (auto& animala : animals)
+			{
+				if (!animala.isPrey)
+				{
+					DeleteAnimal(animala);
+					break;
+				}
+			}
+		
 			this->KeysProcessed[GLFW_KEY_K] = GL_TRUE;
 		}
 
-		
+		if (this->Keys[GLFW_KEY_R] && !this->KeysProcessed[GLFW_KEY_R])
+		{
+			//ADD RAIN SOUND
+			for (unsigned int i = 0; i < 5; i++)
+			{
+				GLuint randNum;
+				GLuint randNum2;
 
+				randNum = rand() % 800 + 1;
+				randNum2 = rand() % 600 + 1;
+				std::cout << "Grass  : " << randNum << " : " << randNum2 << std::endl;
+
+				grass.push_back(Grass(glm::vec2(randNum, randNum2), glm::vec2(50, 50), ResourceManager::GetTexture("grass")));
+			}
+
+			this->KeysProcessed[GLFW_KEY_R] = GL_TRUE;
+		}
+
+		if (this->Keys[GLFW_KEY_E] && !this->KeysProcessed[GLFW_KEY_E])	
+		{	
+			grass.pop_back();	
+			this->KeysProcessed[GLFW_KEY_E] = GL_TRUE;
+		}
+		
+	}
+
+	if (this->Keys[GLFW_KEY_M] && !this->KeysProcessed[GLFW_KEY_M])
+	{
+		if (this->State == GAME_ACTIVE)
+		{
+			this->State == GAME_MENU;
+		}
+		else
+		{
+			this->State == GAME_ACTIVE;
+		}
+		this->KeysProcessed[GLFW_KEY_M] = GL_TRUE;
 	}
 }
 
@@ -288,11 +339,8 @@ void Game::Render()
 		auto preyString = std::to_string(preyCount);
 
 		Text->RenderText("Prey : " + preyString + " Pred : " + predString  , 5.0f, 5.0f, 1.0f);
-
-		Text->RenderText("Artificial Life Simulation", Width/4 - 75, Height / 4, 1.3f);
-		Text->RenderText("P to spawn Prey  O to remove Prey", Width / 4 - 60, Height / 3, 0.75f);
-		Text->RenderText("L to spawn Pred  K to remove Pred", Width / 4 - 60, Height / 3 + 20, 0.75f);
-		Text->RenderText("R to make it rain", Width / 4 + 35 , Height / 3 + 40, 0.75f);
+		Text->RenderText("Menu : M", Width/4, Width/1.5f,  1.0f);
+		
 
 		
 	}
@@ -302,9 +350,11 @@ void Game::Render()
 		// Draw background
 		Renderer->DrawSprite(ResourceManager::GetTexture("background"), glm::vec2(0, 0), glm::vec2(this->Width, this->Height), 0.0f);
 
-		Text->RenderText("Artificial Life Simulation", 250.0f, Height / 2, 1.0f);
-		Text->RenderText("P to spawn Prey | O to remove Prey", 245.0f, Height / 2 + 20.0f, 0.75f);
-		Text->RenderText("L to spawn Predator| K to remove Predator", 245.0f, Height / 2 + 20.0f, 0.75f);
+		Text->RenderText("Artificial Life Simulation", Width / 4 - 75, Height / 4, 1.3f);
+		Text->RenderText("P to spawn Prey  O to remove Prey", Width / 4 - 60, Height / 3, 0.75f);
+		Text->RenderText("L to spawn Pred  K to remove Pred", Width / 4 - 60, Height / 3 + 20, 0.75f);
+		Text->RenderText("R make it rain   E to remove food", Width / 4 - 60, Height / 3 + 40, 0.75f);
+		Text->RenderText("M to begin", Width / 4 - 120, Height / 3 + 60, 0.75f);
 	}
 
 }
