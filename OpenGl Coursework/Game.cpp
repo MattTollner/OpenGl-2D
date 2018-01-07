@@ -1,13 +1,13 @@
 #include "Game.h"
 #include "ResourceManager.h"
-
+#include "TextRenderer.h"
 #include "GameObject.h"
 #include "BallObject.h"
 #include "Animal.h"
 #include "Predator.h"
 #include "Prey.h"
 #include "Grass.h"
-#include <irrKlang.h>>
+#include <irrKlang.h>
 #include <iostream>
 using namespace std;
 using namespace irrklang;
@@ -17,6 +17,7 @@ ISoundEngine *SoundEngine = createIrrKlangDevice();
 
 // Game-related State data
 SpriteRenderer  *Renderer;
+TextRenderer  *Text;
 std::vector<GameObject> objs;
 std::vector<Animal> animals;
 std::vector<Grass> grass;
@@ -63,10 +64,14 @@ Game::Game(GLuint width, GLuint height)
 Game::~Game()
 {
 	delete Renderer;
+	delete Text;
 }
 
 void Game::Init()
 {
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+	
+	
 	// Load shaders
 	ResourceManager::LoadShader("shaders/sprite.vs", "shaders/sprite.fs", nullptr, "sprite");
 	// Configure shaders
@@ -81,8 +86,12 @@ void Game::Init()
 	ResourceManager::LoadTexture("textures/tiger.png",	GL_TRUE, "tiger");
 	ResourceManager::LoadTexture("textures/prey.png", GL_TRUE, "prey");
 
+	//Text renderer
+	Text = new TextRenderer(600, 600);
+	Text->Load("font/Organo.ttf", 24);
+
 	//Audio Load
-	SoundEngine->play2D("audio/breakout.mp3", GL_TRUE);
+	//SoundEngine->play2D("audio/breakout.mp3", GL_TRUE);
 
 
 	// Set render-specific controls
@@ -196,35 +205,108 @@ void Game::ProcessInput(GLfloat dt)
 				animal->NewPos = glm::vec2(400.0f, 300.0f);
 			}
 		}
-				
+
+		if (this->Keys[GLFW_KEY_P] && !this->KeysProcessed[GLFW_KEY_P])
+		{
+			GLuint randNum;
+			GLuint randNum2;
+
+			randNum = rand() % 800 + 1;
+			randNum2 = rand() % 600 + 1;
+
+			animals.push_back(Prey(glm::vec2(randNum, randNum2), ResourceManager::GetTexture("prey"), idCount));
+			this->KeysProcessed[GLFW_KEY_P] = GL_TRUE;
+		}
+
+		if (this->Keys[GLFW_KEY_O] && !this->KeysProcessed[GLFW_KEY_O])
+		{			
+
+			animals.pop_back();
+			this->KeysProcessed[GLFW_KEY_O] = GL_TRUE;
+		}
+
+		if (this->Keys[GLFW_KEY_L] && !this->KeysProcessed[GLFW_KEY_L])
+		{
+			GLuint randNum;
+			GLuint randNum2;
+
+			randNum = rand() % 800 + 1;
+			randNum2 = rand() % 600 + 1;
+
+			animals.push_back(Predator(glm::vec2(randNum, randNum2), ResourceManager::GetTexture("tiger"), idCount));
+			this->KeysProcessed[GLFW_KEY_L] = GL_TRUE;
+		}
+
+
+		if (this->Keys[GLFW_KEY_K] && !this->KeysProcessed[GLFW_KEY_K])
+		{
+
+			animals.pop_back();
+			this->KeysProcessed[GLFW_KEY_K] = GL_TRUE;
+		}
+
+		
 
 	}
 }
 
 void Game::Render()
 {
+	GLuint predCount = 0;
+	GLuint preyCount = 0;
 	if (this->State == GAME_ACTIVE)
 	{
 		// Draw background
 		Renderer->DrawSprite(ResourceManager::GetTexture("background"), glm::vec2(0, 0), glm::vec2(this->Width, this->Height), 0.0f);
 		
 		
-		for (auto attack = objs.begin(); attack != objs.end(); ++attack)
+		/*for (auto attack = objs.begin(); attack != objs.end(); ++attack)
 		{
 			attack->Draw(*Renderer);
-		}
+		}*/
 
 		for (auto animal = animals.begin(); animal != animals.end(); ++animal)
 		{
 			animal->Draw(*Renderer);
+			if (animal->isPrey)
+			{
+				preyCount++;
+			}
+			else
+			{
+				predCount++;
+			}
 		}
 
 		for (auto grasses = grass.begin(); grasses != grass.end(); ++grasses)
 		{
 			grasses->Draw(*Renderer);
-		}			
+		}	
+
+		
+		auto predString = std::to_string(predCount);
+		auto preyString = std::to_string(preyCount);
+
+		Text->RenderText("Prey : " + preyString + " Pred : " + predString  , 5.0f, 5.0f, 1.0f);
+
+		Text->RenderText("Artificial Life Simulation", Width/4 - 75, Height / 4, 1.3f);
+		Text->RenderText("P to spawn Prey  O to remove Prey", Width / 4 - 60, Height / 3, 0.75f);
+		Text->RenderText("L to spawn Pred  K to remove Pred", Width / 4 - 60, Height / 3 + 20, 0.75f);
+		Text->RenderText("R to make it rain", Width / 4 + 35 , Height / 3 + 40, 0.75f);
+
 		
 	}
+
+	if (this->State == GAME_MENU)
+	{
+		// Draw background
+		Renderer->DrawSprite(ResourceManager::GetTexture("background"), glm::vec2(0, 0), glm::vec2(this->Width, this->Height), 0.0f);
+
+		Text->RenderText("Artificial Life Simulation", 250.0f, Height / 2, 1.0f);
+		Text->RenderText("P to spawn Prey | O to remove Prey", 245.0f, Height / 2 + 20.0f, 0.75f);
+		Text->RenderText("L to spawn Predator| K to remove Predator", 245.0f, Height / 2 + 20.0f, 0.75f);
+	}
+
 }
 
 
@@ -250,12 +332,9 @@ void Game::ResetPlayer()
 
 
 // Collision detection
-//GLboolean CheckCollision(GameObject &one, GameObject &two);
+
 GLboolean CheckCollision(Animal &one, Animal &two);
 GLboolean CheckCollision(Animal &one, Grass &two);
-//GLboolean CheckCollision(std::vector<Animal> &one, std::vector<Animal> &two);
-Collision CheckCollision(BallObject &one, GameObject &two);
-Direction VectorDirection(glm::vec2 closest);
 void DeleteAnimal(Animal animalToDel);
 GLuint RandomNumberInt(GLuint numLarge, GLuint numSmall);
 
@@ -396,6 +475,10 @@ GLboolean CheckCollision(Animal & one, Grass & two)
 	return collisionX && collisionY;
 }
 
+void renderBitmapString(float x, float y, char *string)
+{
+	
+}
 
 
 

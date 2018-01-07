@@ -1,3 +1,9 @@
+#ifdef _MSC_VER
+// Use Visual C++'s memory checking functionality
+#define _CRTDBG_MAP_ALLOC
+#include <crtdbg.h>
+#endif // _MSC_VER
+
 #define GLEW_STATIC
 #include <glew.h>
 #include <glfw3.h>
@@ -12,19 +18,25 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 // The Width of the screen
 const GLuint SCREEN_WIDTH = 800;
 // The height of the screen
-const GLuint SCREEN_HEIGHT = 600;
+const GLuint SCREEN_HEIGHT = 800;
 
 Game Breakout(SCREEN_WIDTH, SCREEN_HEIGHT);
 
 int main(int argc, char *argv[])
 {
+#ifdef _MSC_VER
+	
+	//_CrtSetBreakAlloc(180);
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+	
+#endif // _MSC_VER
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
-	GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Breakout", nullptr, nullptr);
+	GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Artificial Life Simulation", nullptr, nullptr);
 	glfwMakeContextCurrent(window);
 
 
@@ -92,5 +104,16 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			Breakout.Keys[key] = GL_TRUE;
 		else if (action == GLFW_RELEASE)
 			Breakout.Keys[key] = GL_FALSE;
+	}
+
+	if (key >= 0 && key < 1024)
+	{
+		if (action == GLFW_PRESS)
+			Breakout.Keys[key] = GL_TRUE;
+		else if (action == GLFW_RELEASE)
+		{
+			Breakout.Keys[key] = GL_FALSE;
+			Breakout.KeysProcessed[key] = GL_FALSE;
+		}
 	}
 }
