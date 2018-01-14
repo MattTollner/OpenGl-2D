@@ -10,7 +10,7 @@ Predator::Predator()
 	
 }
 
-Predator::Predator(glm::vec2 pos, Texture2D sprite, GLuint id) 
+Predator::Predator(glm::vec2 pos, TextureHelperClass sprite, GLuint id) 
 {
 	this->Position = pos;
 	this->Sprite = sprite;

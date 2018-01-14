@@ -1,8 +1,8 @@
 #pragma once
-#include <glew.h>
-#include <glm.hpp>
-#include "Texture2D.h"
-#include "SpriteRenderer.h"
+#include <GL\glew.h>
+#include <glm\glm\glm.hpp>
+#include "TextureHelperClass.h"
+#include "SpriteHelperClass.h"
 class Grass
 {
 public:
@@ -10,14 +10,14 @@ public:
 	glm::vec2 Position, Size;
 	glm::vec3 Colour;
 	GLfloat Rotation;
-	Texture2D Sprite;
+	TextureHelperClass Sprite;
 	Grass();
-	Grass(glm::vec2 pos, glm::vec2 size, Texture2D sprite);
+	Grass(glm::vec2 pos, glm::vec2 size, TextureHelperClass sprite);
 	~Grass();
 
 	void DecreaseGrass(GLfloat amount);
 
-	void Draw(SpriteRenderer & renderer);
+	void Draw(SpriteHelperClass & renderer);
 	
 };
 

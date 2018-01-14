@@ -1,8 +1,8 @@
 #pragma once
-#include <glew.h>
-#include <glm.hpp>
-#include "Texture2D.h"
-#include "SpriteRenderer.h"
+#include <GL\glew.h>
+#include <glm\glm\glm.hpp>
+#include "TextureHelperClass.h"
+#include "SpriteHelperClass.h"
 
 
 
@@ -25,22 +25,19 @@ public:
 	glm::vec3 Colour;
 
 	GLfloat Rotation;
-	Texture2D Sprite;
+	TextureHelperClass Sprite;
 
 	
 	Animal();
-	Animal(glm::vec2 pos, glm::vec2 size, Texture2D sprite);
+	Animal(glm::vec2 pos, glm::vec2 size, TextureHelperClass sprite);
 	~Animal();
 
-	glm::vec2 MoveTo();
+	glm::vec2 MoveTo(GLfloat dt, GLuint screenWidth , GLuint screenHeight );
 
-	void Draw(SpriteRenderer & renderer);
+	void Draw(SpriteHelperClass & renderer);
 	void DecraseHunger(GLfloat decraseAmount);
 	void DecreaseFertility(GLfloat decreaseAmount);
-	GLboolean Breed();
-
-
-	
+	GLboolean Breed();	
 
 };
 

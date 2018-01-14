@@ -1,13 +1,11 @@
 #include "Game.h"
-#include "ResourceManager.h"
-#include "TextRenderer.h"
-#include "GameObject.h"
-#include "BallObject.h"
+#include "ResHelperClass.h"
+#include "TextHelperClass.h"
 #include "Animal.h"
 #include "Predator.h"
 #include "Prey.h"
 #include "Grass.h"
-#include <irrKlang.h>
+#include <irrKlang\irrKlang.h>
 #include <iostream>
 using namespace std;
 using namespace irrklang;
@@ -16,14 +14,19 @@ ISoundEngine *SoundEngine = createIrrKlangDevice();
 #include <cstdlib>
 
 // Game-related State data
-SpriteRenderer  *Renderer;
-TextRenderer  *Text;
-std::vector<GameObject> objs;
+SpriteHelperClass  *Renderer;
+TextHelperClass  *Text;
 std::vector<Animal> animals;
 std::vector<Grass> grass;
 std::vector<Predator> predators;
 std::vector<Prey> prey;
 GLuint idCount = 0;
+GLboolean gameChange = false;
+
+// The Width of the screen
+ GLuint SCREEN_WIDTH = 800;
+// The height of the screen
+ GLuint SCREEN_HEIGHT = 800;
 
 void DeleteAnimal(Animal  animalToDel)
 {
@@ -56,7 +59,7 @@ GLuint RandomNumberInt(GLuint numLarge, GLuint  numSmall)
 
 
 Game::Game(GLuint width, GLuint height)
-	: State(GAME_MENU), Keys(), Width(width), Height(height)
+	: State(MENU), Keys(), Width(width), Height(height)
 {
 
 }
@@ -73,29 +76,29 @@ void Game::Init()
 	
 	
 	// Load shaders
-	ResourceManager::LoadShader("shaders/sprite.vs", "shaders/sprite.fs", nullptr, "sprite");
+	ResHelperClass::LoadShader("shaders/sprite.vs", "shaders/sprite.fs", "sprite");
 	// Configure shaders
 	glm::mat4 projection = glm::ortho(0.0f, static_cast<GLfloat>(this->Width), static_cast<GLfloat>(this->Height), 0.0f, -1.0f, 1.0f);
-	ResourceManager::GetShader("sprite").Use().SetInteger("sprite", 0);
-	ResourceManager::GetShader("sprite").SetMatrix4("projection", projection);
+	ResHelperClass::GetShader("sprite").Use().SetInteger("sprite", 0);
+	ResHelperClass::GetShader("sprite").SetMatrix4("projection", projection);
 	// Load textures
-	ResourceManager::LoadTexture("textures/sandBG.jpg", GL_FALSE, "background");
-	ResourceManager::LoadTexture("textures/awesomeface.png", GL_TRUE, "face");
-	ResourceManager::LoadTexture("textures/block.png", GL_FALSE, "block");
-	ResourceManager::LoadTexture("textures/grass.jpg", GL_FALSE, "grass");
-	ResourceManager::LoadTexture("textures/tiger.png",	GL_TRUE, "tiger");
-	ResourceManager::LoadTexture("textures/prey.png", GL_TRUE, "prey");
+	ResHelperClass::LoadTexture("textures/sandBG.jpg", GL_FALSE, "background");
+	ResHelperClass::LoadTexture("textures/awesomeface.png", GL_TRUE, "face");
+	ResHelperClass::LoadTexture("textures/block.png", GL_FALSE, "block");
+	ResHelperClass::LoadTexture("textures/grass.jpg", GL_FALSE, "grass");
+	ResHelperClass::LoadTexture("textures/tiger.png",	GL_TRUE, "tiger");
+	ResHelperClass::LoadTexture("textures/prey.png", GL_TRUE, "prey");
 
 	//Text renderer
-	Text = new TextRenderer(600, 600);
-	Text->Load("font/Organo.ttf", 24);
+	Text = new TextHelperClass(600, 600);
+	Text->LoadText("font/Organo.ttf", 24);
 
 	//Audio Load
 	//SoundEngine->play2D("audio/breakout.mp3", GL_TRUE);
 
 
 	// Set render-specific controls
-	Renderer = new SpriteRenderer(ResourceManager::GetShader("sprite"));
+	Renderer = new SpriteHelperClass(ResHelperClass::GetShader("sprite"));
 	// Load levels
 	
 	// Configure game objects	
@@ -109,7 +112,7 @@ void Game::Init()
 		randNum2 = rand() % 600 + 1;
 		std::cout << "Grass  : " << randNum << " : " << randNum2 << std::endl;
 
-		grass.push_back(Grass(glm::vec2(randNum, randNum2), glm::vec2(50,50), ResourceManager::GetTexture("grass")));		
+		grass.push_back(Grass(glm::vec2(randNum, randNum2), glm::vec2(50,50), ResHelperClass::GetTexture("grass")));		
 	}
 
 	for (unsigned int i = 0; i < 1; i++)
@@ -121,7 +124,7 @@ void Game::Init()
 		randNum2 = rand() % 600 + 1;
 		std::cout << "Predator  : " << randNum << " : " << randNum2 << std::endl;
 
-		animals.push_back(Predator(glm::vec2(randNum, randNum2), ResourceManager::GetTexture("tiger"), idCount));
+		animals.push_back(Predator(glm::vec2(randNum, randNum2), ResHelperClass::GetTexture("tiger"), idCount));
 		idCount++;
 	}
 
@@ -134,7 +137,7 @@ void Game::Init()
 		randNum2 = rand() % 600 + 1;
 		std::cout << "Prey  : " <<randNum << " : " << randNum2 << std::endl;
 
-		animals.push_back(Prey(glm::vec2(randNum, randNum2), ResourceManager::GetTexture("prey"), idCount));
+		animals.push_back(Prey(glm::vec2(randNum, randNum2), ResHelperClass::GetTexture("prey"), idCount));
 		idCount++;
 	}
 }
@@ -143,26 +146,17 @@ void Game::Update(GLfloat dt)
 {
 
 	// Check for collisions
-	this->DoCollisions();
-	// Check loss condition
-	//if (Ball->Position.y >= this->Height) // Did ball reach bottom edge?
-	//{
-	//	this->ResetLevel();
-	//	this->ResetPlayer();
-	//}
+	this->CheckForCollisions();
 
-	for (auto attack = objs.begin(); attack != objs.end(); ++attack)	{
-		
-		attack->MoveTo();
-	}
+	
 
 	for (auto animal = animals.begin(); animal != animals.end(); ++animal)
 	{
-		animal->MoveTo();
+		animal->MoveTo(dt, SCREEN_WIDTH, SCREEN_HEIGHT);
 		GLfloat num = RandomNumberInt(3, 2);
 
-		animal->DecraseHunger(num / RandomNumberInt(200, 200));		
-		animal->DecreaseFertility(0.05f);
+		animal->DecraseHunger((num/10)*dt);		
+		animal->DecreaseFertility(4 * dt);
 	}
 
 	unsigned i = 0;
@@ -194,7 +188,7 @@ void Game::Update(GLfloat dt)
 
 void Game::ProcessInput(GLfloat dt)
 {
-	if (this->State == GAME_ACTIVE)	{
+	if (this->State == GAME)	{
 		
 		
 		if (this->Keys[GLFW_KEY_SPACE])
@@ -214,7 +208,7 @@ void Game::ProcessInput(GLfloat dt)
 			randNum = rand() % 800 + 1;
 			randNum2 = rand() % 600 + 1;
 
-			animals.push_back(Prey(glm::vec2(randNum, randNum2), ResourceManager::GetTexture("prey"), idCount));
+			animals.push_back(Prey(glm::vec2(randNum, randNum2), ResHelperClass::GetTexture("prey"), idCount));
 			idCount++;
 			this->KeysProcessed[GLFW_KEY_P] = GL_TRUE;
 		}
@@ -241,7 +235,7 @@ void Game::ProcessInput(GLfloat dt)
 			randNum = rand() % 800 + 1;
 			randNum2 = rand() % 600 + 1;
 
-			animals.push_back(Predator(glm::vec2(randNum, randNum2), ResourceManager::GetTexture("tiger"), idCount));
+			animals.push_back(Predator(glm::vec2(randNum, randNum2), ResHelperClass::GetTexture("tiger"), idCount));
 			idCount++;
 			this->KeysProcessed[GLFW_KEY_L] = GL_TRUE;
 		}
@@ -269,11 +263,11 @@ void Game::ProcessInput(GLfloat dt)
 				GLuint randNum;
 				GLuint randNum2;
 
-				randNum = rand() % 800 + 1;
-				randNum2 = rand() % 600 + 1;
+				randNum = rand() % SCREEN_WIDTH + 1;
+				randNum2 = rand() % SCREEN_HEIGHT + 1;
 				std::cout << "Grass  : " << randNum << " : " << randNum2 << std::endl;
 
-				grass.push_back(Grass(glm::vec2(randNum, randNum2), glm::vec2(50, 50), ResourceManager::GetTexture("grass")));
+				grass.push_back(Grass(glm::vec2(randNum, randNum2), glm::vec2(50, 50), ResHelperClass::GetTexture("grass")));
 			}
 
 			this->KeysProcessed[GLFW_KEY_R] = GL_TRUE;
@@ -289,13 +283,14 @@ void Game::ProcessInput(GLfloat dt)
 
 	if (this->Keys[GLFW_KEY_M] && !this->KeysProcessed[GLFW_KEY_M])
 	{
-		if (this->State == GAME_ACTIVE)
+		
+		if (this->State == GAME)
 		{
-			this->State == GAME_MENU;
-		}
+			this->State = MENU;
+		}		
 		else
 		{
-			this->State == GAME_ACTIVE;
+			this->State = GAME;
 		}
 		this->KeysProcessed[GLFW_KEY_M] = GL_TRUE;
 	}
@@ -305,17 +300,11 @@ void Game::Render()
 {
 	GLuint predCount = 0;
 	GLuint preyCount = 0;
-	if (this->State == GAME_ACTIVE)
+	if (this->State == GAME)
 	{
 		// Draw background
-		Renderer->DrawSprite(ResourceManager::GetTexture("background"), glm::vec2(0, 0), glm::vec2(this->Width, this->Height), 0.0f);
+		Renderer->RenderSprite(ResHelperClass::GetTexture("background"), glm::vec2(0, 0), glm::vec2(SCREEN_WIDTH/2, SCREEN_HEIGHT), 0.0f);
 		
-		
-		/*for (auto attack = objs.begin(); attack != objs.end(); ++attack)
-		{
-			attack->Draw(*Renderer);
-		}*/
-
 		for (auto animal = animals.begin(); animal != animals.end(); ++animal)
 		{
 			animal->Draw(*Renderer);
@@ -345,10 +334,10 @@ void Game::Render()
 		
 	}
 
-	if (this->State == GAME_MENU)
+	if (this->State == MENU)
 	{
 		// Draw background
-		Renderer->DrawSprite(ResourceManager::GetTexture("background"), glm::vec2(0, 0), glm::vec2(this->Width, this->Height), 0.0f);
+		Renderer->RenderSprite(ResHelperClass::GetTexture("background"), glm::vec2(0, 0), glm::vec2(this->Width, this->Height), 0.0f);
 
 		Text->RenderText("Artificial Life Simulation", Width / 4 - 75, Height / 4, 1.3f);
 		Text->RenderText("P to spawn Prey  O to remove Prey", Width / 4 - 60, Height / 3, 0.75f);
@@ -360,23 +349,11 @@ void Game::Render()
 }
 
 
-void Game::ResetLevel()
+void Game::SetScreenSize(GLuint screenWidth, GLuint screenHeight)
 {
-	if (this->Level == 0)this->Levels[0].Load("levels/one.lvl", this->Width, this->Height * 0.5f);
-	else if (this->Level == 1)
-		this->Levels[1].Load("levels/two.lvl", this->Width, this->Height * 0.5f);
-	else if (this->Level == 2)
-		this->Levels[2].Load("levels/three.lvl", this->Width, this->Height * 0.5f);
-	else if (this->Level == 3)
-		this->Levels[3].Load("levels/four.lvl", this->Width, this->Height * 0.5f);
-}
-
-void Game::ResetPlayer()
-{
-	//// Reset player/ball stats
-	//Player->Size = PLAYER_SIZE;
-	//Player->Position = glm::vec2(this->Width / 2 - PLAYER_SIZE.x / 2, this->Height - PLAYER_SIZE.y);
-	//Ball->Reset(Player->Position + glm::vec2(PLAYER_SIZE.x / 2 - BALL_RADIUS, -(BALL_RADIUS * 2)), INITIAL_BALL_VELOCITY);
+	SCREEN_WIDTH = screenWidth;
+	SCREEN_HEIGHT = screenHeight;
+	//cout << "Width " << screenWidth << " Heigth " << screenHeight;
 }
 
 
@@ -388,7 +365,7 @@ GLboolean CheckCollision(Animal &one, Grass &two);
 void DeleteAnimal(Animal animalToDel);
 GLuint RandomNumberInt(GLuint numLarge, GLuint numSmall);
 
-void Game::DoCollisions()
+void Game::CheckForCollisions()
 {
 
 	for (auto& animal : animals)
@@ -426,7 +403,7 @@ void Game::DoCollisions()
 
 								randNum = rand() % 800 + 1;
 								randNum2 = rand() % 600 + 1;
-								animals.push_back(Prey(glm::vec2(randNum, randNum2), ResourceManager::GetTexture("prey"), idCount));
+								animals.push_back(Prey(glm::vec2(randNum, randNum2), ResHelperClass::GetTexture("prey"), idCount));
 								SoundEngine->play2D("audio/prey.wav", GL_FALSE);
 								idCount++;
 								animal.Fertile = 30.0f;
@@ -480,7 +457,7 @@ void Game::DoCollisions()
 
 										randNum = rand() % 800 + 1;
 										randNum2 = rand() % 600 + 1;
-										animals.push_back(Predator(glm::vec2(randNum, randNum2), ResourceManager::GetTexture("tiger"), idCount));
+										animals.push_back(Predator(glm::vec2(randNum, randNum2), ResHelperClass::GetTexture("tiger"), idCount));
 										SoundEngine->play2D("audio/predator.wav", GL_TRUE);
 										idCount++;
 										animal.Fertile = 30.0f;

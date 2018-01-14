@@ -88,7 +88,12 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>.\Include\Simple OpenGL Image Library\src;.\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>.\Include\Simple OpenGL Image Library\projects\VC9\Debug;.\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32s.lib;SOIL.lib;irrKlang.lib;freetype28.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -122,34 +127,32 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Animal.cpp" />
-    <ClCompile Include="BallObject.cpp" />
     <ClCompile Include="Game.cpp" />
-    <ClCompile Include="GameLevel.cpp" />
-    <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Grass.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Predator.cpp" />
     <ClCompile Include="Prey.cpp" />
-    <ClCompile Include="ResourceManager.cpp" />
-    <ClCompile Include="Shader.cpp" />
-    <ClCompile Include="SpriteRenderer.cpp" />
-    <ClCompile Include="TextRenderer.cpp" />
-    <ClCompile Include="Texture2D.cpp" />
+    <ClCompile Include="ResHelperClass.cpp" />
+    <ClCompile Include="ShaderHelperClass.cpp" />
+    <ClCompile Include="SpriteHelperClass.cpp" />
+    <ClCompile Include="TextHelperClass.cpp" />
+    <ClCompile Include="TextureHelperClass.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animal.h" />
-    <ClInclude Include="BallObject.h" />
     <ClInclude Include="Game.h" />
-    <ClInclude Include="GameLevel.h" />
-    <ClInclude Include="GameObject.h" />
     <ClInclude Include="Grass.h" />
     <ClInclude Include="Predator.h" />
     <ClInclude Include="Prey.h" />
-    <ClInclude Include="ResourceManager.h" />
-    <ClInclude Include="Shader.h" />
-    <ClInclude Include="SpriteRenderer.h" />
-    <ClInclude Include="TextRenderer.h" />
-    <ClInclude Include="Texture2D.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="ResHelperClass.h" />
+    <ClInclude Include="ShaderHelperClass.h" />
+    <ClInclude Include="SpriteHelperClass.h" />
+    <ClInclude Include="TextHelperClass.h" />
+    <ClInclude Include="TextureHelperClass.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="OpenGl Coursework.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

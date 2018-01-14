@@ -1,10 +1,10 @@
 #pragma once
 #include <map>
 
-#include <glew.h>
-#include <glm.hpp>
-#include "Texture2D.h"
-#include "Shader.h"
+#include <GL\glew.h>
+#include <glm\glm\glm.hpp>
+#include "TextHelperClass.h"
+#include "ShaderHelperClass.h"
 
 /// Holds all state information relevant to a character as loaded using FreeType
 struct Character {
@@ -19,19 +19,19 @@ struct Character {
 // A renderer class for rendering text displayed by a font loaded using the 
 // FreeType library. A single font is loaded, processed into a list of Character
 // items for later rendering.
-class TextRenderer
+class TextHelperClass
 {
 public:
 	// Holds a list of pre-compiled Characters
 	std::map<GLchar, Character> Characters;
 	// Shader used for text rendering
-	Shader TextShader;
-	TextRenderer();
-	~TextRenderer();
+	ShaderHelperClass TextShader;
+	TextHelperClass();
+	~TextHelperClass();
 	// Constructor
-	TextRenderer(GLuint width, GLuint height);
+	TextHelperClass(GLuint width, GLuint height);
 	// Pre-compiles a list of characters from the given font
-	void Load(std::string font, GLuint fontSize);
+	void LoadText(std::string font, GLuint fontSize);
 	// Renders a string of text using the precompiled list of characters
 	void RenderText(std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color = glm::vec3(1.0f));
 private:

@@ -5,11 +5,11 @@
 #endif // _MSC_VER
 
 #define GLEW_STATIC
-#include <glew.h>
-#include <glfw3.h>
-
+#include <gl\glew.h>
+#include <GLFW\glfw3.h>
+#include <iostream>
 #include "Game.h"
-#include "ResourceManager.h"
+#include "ResHelperClass.h"
 
 
 // GLFW function declerations
@@ -20,13 +20,16 @@ const GLuint SCREEN_WIDTH = 800;
 // The height of the screen
 const GLuint SCREEN_HEIGHT = 800;
 
-Game Breakout(SCREEN_WIDTH, SCREEN_HEIGHT);
+
+
+
+Game Simulation(SCREEN_WIDTH, SCREEN_HEIGHT);
 
 int main(int argc, char *argv[])
 {
 #ifdef _MSC_VER
 	
-	//_CrtSetBreakAlloc(180);
+	//_CrtSetBreakAlloc(327);
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	
 #endif // _MSC_VER
@@ -34,9 +37,10 @@ int main(int argc, char *argv[])
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 
 	GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Artificial Life Simulation", nullptr, nullptr);
+	
 	glfwMakeContextCurrent(window);
 
 
@@ -47,47 +51,64 @@ int main(int argc, char *argv[])
 
 	glfwSetKeyCallback(window, key_callback);
 
+
 	// OpenGL configuration
 	glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+	
+	int w;
+	int h;
+	
 	// Initialize game
-	Breakout.Init();
+	Simulation.Init();
 
-	// DeltaTime variables
+
 	GLfloat deltaTime = 0.0f;
 	GLfloat lastFrame = 0.0f;
 
 	// Start Game within Menu State
-	Breakout.State = GAME_MENU;
+	Simulation.State = GAME;
+
+
+
 
 	while (!glfwWindowShouldClose(window))
 	{
-		// Calculate delta time
-		GLfloat currentFrame = glfwGetTime();
-		deltaTime = currentFrame - lastFrame;
-		lastFrame = currentFrame;
+
+		
+		//Delta time calc
+		GLfloat curFrame = glfwGetTime();
+		deltaTime = curFrame - lastFrame;
+		lastFrame = curFrame;
 		glfwPollEvents();
 
-		//deltaTime = 0.001f;
-		// Manage user input
-		Breakout.ProcessInput(deltaTime);
+	
+		glfwGetWindowSize(window, &w, &h);
+		
+		Simulation.SetScreenSize(w, h);
 
-		// Update Game state
-		Breakout.Update(deltaTime);
 
+		Simulation.ProcessInput(deltaTime);
+
+		if (Simulation.State == GAME)
+		{
+			// Update Game state
+			Simulation.Update(deltaTime);
+		}
+		
 		// Render
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
-		Breakout.Render();
+		Simulation.Render();
 
 		glfwSwapBuffers(window);
 	}
 
 	// Delete all resources as loaded using the resource manager
-	ResourceManager::Clear();
+	ResHelperClass::Clear();
 
 	glfwTerminate();
 	return 0;
@@ -101,19 +122,19 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	if (key >= 0 && key < 1024)
 	{
 		if (action == GLFW_PRESS)
-			Breakout.Keys[key] = GL_TRUE;
+			Simulation.Keys[key] = GL_TRUE;
 		else if (action == GLFW_RELEASE)
-			Breakout.Keys[key] = GL_FALSE;
+			Simulation.Keys[key] = GL_FALSE;
 	}
 
 	if (key >= 0 && key < 1024)
 	{
 		if (action == GLFW_PRESS)
-			Breakout.Keys[key] = GL_TRUE;
+			Simulation.Keys[key] = GL_TRUE;
 		else if (action == GLFW_RELEASE)
 		{
-			Breakout.Keys[key] = GL_FALSE;
-			Breakout.KeysProcessed[key] = GL_FALSE;
+			Simulation.Keys[key] = GL_FALSE;
+			Simulation.KeysProcessed[key] = GL_FALSE;
 		}
 	}
 }

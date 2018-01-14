@@ -6,7 +6,7 @@ Prey::Prey()
 {
 }
 
-Prey::Prey(glm::vec2 pos, Texture2D sprite, GLuint id)
+Prey::Prey(glm::vec2 pos, TextureHelperClass sprite, GLuint id)
 {
 
 	this->Position = pos;

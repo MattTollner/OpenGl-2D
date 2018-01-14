@@ -6,7 +6,7 @@ Grass::Grass()
 {
 }
 
-Grass::Grass(glm::vec2 pos, glm::vec2 size, Texture2D sprite)
+Grass::Grass(glm::vec2 pos, glm::vec2 size, TextureHelperClass sprite)
 {
 	this->Position = pos;
 	this->Size = size;
@@ -28,7 +28,9 @@ void Grass::DecreaseGrass(GLfloat amount)
 	this->Colour.g -= 0.031f;
 }
 
-void Grass::Draw(SpriteRenderer &renderer)
+
+
+void Grass::Draw(SpriteHelperClass &renderer)
 {
-	renderer.DrawSprite(this->Sprite, this->Position, this->Size, this->Rotation, this->Colour);
+	renderer.RenderSprite(this->Sprite, this->Position, this->Size, this->Rotation, this->Colour);
 }
