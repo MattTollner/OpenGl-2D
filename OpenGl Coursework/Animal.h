@@ -32,7 +32,7 @@ public:
 	Animal(glm::vec2 pos, glm::vec2 size, TextureHelperClass sprite);
 	~Animal();
 
-	glm::vec2 MoveTo(GLfloat dt, GLuint screenWidth , GLuint screenHeight );
+	glm::vec2 MoveTo(GLfloat deltaTime, GLuint screenWidth , GLuint screenHeight );
 
 	void Draw(SpriteHelperClass & renderer);
 	void DecraseHunger(GLfloat decraseAmount);

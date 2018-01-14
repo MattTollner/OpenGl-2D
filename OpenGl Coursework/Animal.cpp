@@ -16,7 +16,7 @@ Animal::~Animal()
 {
 }
 
-glm::vec2 Animal::MoveTo(GLfloat dt, GLuint screenWidth, GLuint screenHeight)
+glm::vec2 Animal::MoveTo(GLfloat deltaTime, GLuint screenWidth, GLuint screenHeight)
 {
 
 	dis.x = NewPos.x - this->Position.x;
@@ -37,8 +37,8 @@ glm::vec2 Animal::MoveTo(GLfloat dt, GLuint screenWidth, GLuint screenHeight)
 	}
 	else {
 		radian = atan2(dis.y, dis.x);
-		this->Position.x += cos(radian)*(speed *5 ) *(dt * 10);
-		this->Position.y += sin(radian)*(speed * 5)* (dt * 10);
+		this->Position.x += cos(radian)*(speed *5 ) *(deltaTime * 10);
+		this->Position.y += sin(radian)*(speed * 5)* (deltaTime * 10);
 		rot = radian * 180 / glm::pi<float>();
 		this->Rotation = rot;
 	}

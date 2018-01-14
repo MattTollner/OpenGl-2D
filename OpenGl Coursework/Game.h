@@ -23,8 +23,8 @@ public:
 	~Game();
 	void Init();
 	// GameLoop
-	void ProcessInput(GLfloat dt);
-	void Update(GLfloat dt);
+	void ProcessInput(GLfloat deltaTime);
+	void Update(GLfloat deltaTime);
 	void Render();
 	void CheckForCollisions();
 	// Reset

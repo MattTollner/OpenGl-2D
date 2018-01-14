@@ -14,15 +14,15 @@ SpriteHelperClass::~SpriteHelperClass()
 
 void SpriteHelperClass::RenderSprite(TextureHelperClass &texture, glm::vec2 position, glm::vec2 scale, GLfloat rotate, glm::vec3 colour)
 {
-	// Prepare transformations
-	this->shader.Use();
+	
+	this->shader.UseShader();
 	glm::mat4 model;
 	model = glm::translate(model, glm::vec3(position, 0.0f));  
 
 	// Centers origin for rotation
 	model = glm::translate(model, glm::vec3(0.5f * scale.x, 0.5f * scale.y, 0.0f));
 	model = glm::rotate(model, rotate, glm::vec3(0.0f, 0.0f, 1.0f)); 
-	//Resets origin
+	//Resets origin to top left
 	model = glm::translate(model, glm::vec3(-0.5f * scale.x, -0.5f * scale.y, 0.0f)); 
 	model = glm::scale(model, glm::vec3(scale, 1.0f)); 
 
@@ -42,10 +42,9 @@ void SpriteHelperClass::RenderSprite(TextureHelperClass &texture, glm::vec2 posi
 //Creates quad 
 void SpriteHelperClass::quadSetup()
 {
-	GLuint VBO;
+
 	GLfloat vertices[] = {
-		//Position      //Texture
-		0.0f, 1.0f, 0.0f, 1.0f,
+		0.0f, 1.0f, 0.0f, 1.0f, //tri 
 		1.0f, 0.0f, 1.0f, 0.0f,
 		0.0f, 0.0f, 0.0f, 0.0f,
 
@@ -54,8 +53,9 @@ void SpriteHelperClass::quadSetup()
 		1.0f, 0.0f, 1.0f, 0.0f
 	};
 
-	glGenVertexArrays(1, &this->qVAO);
-	glGenBuffers(1, &VBO);
+	GLuint VBO;
+	glGenVertexArrays(1, &this->qVAO); //Creates 1 vertex array object
+	glGenBuffers(1, &VBO); // Creates 1 vertex buffer
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);

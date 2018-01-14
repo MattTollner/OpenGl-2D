@@ -103,7 +103,7 @@ void TextHelperClass::LoadText(std::string font, GLuint fontSize)
 void TextHelperClass::RenderText(std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color)
 {
 	// Activate corresponding render state	
-	this->TextShader.Use();
+	this->TextShader.UseShader();
 	this->TextShader.SetVector3f("textColor", color);
 	glActiveTexture(GL_TEXTURE0);
 	glBindVertexArray(this->VAO);

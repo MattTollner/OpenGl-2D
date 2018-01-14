@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-ShaderHelperClass &ShaderHelperClass::Use()
+ShaderHelperClass &ShaderHelperClass::UseShader()
 {
 	glUseProgram(this->ID);
 	return *this;
@@ -10,72 +10,69 @@ ShaderHelperClass &ShaderHelperClass::Use()
 
 void ShaderHelperClass::Compile(const GLchar* vertexShader, const GLchar* fragmentShader)
 {
-	GLuint sVertex, sFragment;
-	// Vertex Shader
-	sVertex = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(sVertex, 1, &vertexShader, NULL);
-	glCompileShader(sVertex);
-	checkShaderError(sVertex, "VERTEX");
-	// Fragment Shader
-	sFragment = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(sFragment, 1, &fragmentShader, NULL);
-	glCompileShader(sFragment);
-	checkShaderError(sFragment, "FRAGMENT");
+	GLuint vertexShade, fragmentShade;
 	
-	// Shader Program
+	vertexShade = glCreateShader(GL_VERTEX_SHADER);
+	glShaderSource(vertexShade, 1, &vertexShader, NULL);
+	glCompileShader(vertexShade);
+	checkShaderError(vertexShade, "Vert");
+
+	fragmentShade = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(fragmentShade, 1, &fragmentShader, NULL);
+	glCompileShader(fragmentShade);
+	checkShaderError(fragmentShade, "Frag");
+	
 	this->ID = glCreateProgram();
-	glAttachShader(this->ID, sVertex);
-	glAttachShader(this->ID, sFragment);
+	glAttachShader(this->ID, vertexShade);
+	glAttachShader(this->ID, fragmentShade);
 	
 	glLinkProgram(this->ID);
-	checkShaderError(this->ID, "PROGRAM");
-	// Delete the shaders as they're linked into our program now and no longer necessery
-	glDeleteShader(sVertex);
-	glDeleteShader(sFragment);
+	checkShaderError(this->ID, "Prog");
+	//Shaders linked delete vars
+	glDeleteShader(vertexShade);
+	glDeleteShader(fragmentShade);
 
 }
 
-//void Shader::SetFloat(const GLchar *name, GLfloat value, GLboolean useShader)
-//{
-//	if (useShader)
-//		this->Use();
-//	glUniform1f(glGetUniformLocation(this->ID, name), value);
-//}
 void ShaderHelperClass::SetInt(const GLchar *name, GLint value, GLboolean useShader)
 {
 	if (useShader)
-		this->Use();
+	{
+		this->UseShader();
+	}		
 	glUniform1i(glGetUniformLocation(this->ID, name), value);
 }
 
 void  ShaderHelperClass::SetVector3f(const GLchar *name, const glm::vec3 &value, GLboolean useShader)
 {
 	if (useShader)
-		this->Use();
+	{
+		this->UseShader();
+	}		
 	glUniform3f(glGetUniformLocation(this->ID, name), value.x, value.y, value.z);
 }
 
 void ShaderHelperClass::SetMatrix4(const GLchar *name, const glm::mat4 &matrix, GLboolean useShader)
 {
 	if (useShader)
-		this->Use();
+	{
+		this->UseShader();
+	}		
 	glUniformMatrix4fv(glGetUniformLocation(this->ID, name), 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
-//CHecks for shader errors
+//Checks for shader errors
 void ShaderHelperClass::checkShaderError(GLuint object, std::string type)
 {
 	GLint success;
 	GLchar infoLog[1024];
-	if (type != "PROGRAM")
+	if (type != "Prog")
 	{
 		glGetShaderiv(object, GL_COMPILE_STATUS, &success);
 		if (!success)
 		{
 			glGetShaderInfoLog(object, 1024, NULL, infoLog);
-			std::cout << "| ERROR::SHADER: Compile-time error: Type: " << type << "\n"
-				<< infoLog << "\n -- --------------------------------------------------- -- "
-				<< std::endl;
+			std::cout << "Shader error - Compile : Type: " << type << "\n" << infoLog << "\n" << std::endl;
 		}
 	}
 	else
@@ -84,9 +81,7 @@ void ShaderHelperClass::checkShaderError(GLuint object, std::string type)
 		if (!success)
 		{
 			glGetProgramInfoLog(object, 1024, NULL, infoLog);
-			std::cout << "| ERROR::Shader: Link-time error: Type: " << type << "\n"
-				<< infoLog << "\n -- --------------------------------------------------- -- "
-				<< std::endl;
+			std::cout << "Shader error - Link : Type: " << type << "\n" << infoLog << "\n" << std::endl;
 		}
 	}
 }

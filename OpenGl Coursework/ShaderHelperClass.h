@@ -14,7 +14,7 @@ public:
 	GLuint ID;
 	ShaderHelperClass() { }
 	//Sets current shader to active
-	ShaderHelperClass  &Use();
+	ShaderHelperClass  &UseShader();
 	// Compiles the shader from given source code
 	void    Compile(const GLchar *vertexShader, const GLchar *fragmentShader); 
 

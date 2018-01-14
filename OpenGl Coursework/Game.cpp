@@ -79,12 +79,11 @@ void Game::Init()
 	ResHelperClass::LoadShader("shaders/sprite.vs", "shaders/sprite.fs", "sprite");
 	// Configure shaders
 	glm::mat4 projection = glm::ortho(0.0f, static_cast<GLfloat>(this->Width), static_cast<GLfloat>(this->Height), 0.0f, -1.0f, 1.0f);
-	ResHelperClass::GetShader("sprite").Use().SetInt("sprite", 0);
+	ResHelperClass::GetShader("sprite").UseShader().SetInt("sprite", 0);
 	ResHelperClass::GetShader("sprite").SetMatrix4("projection", projection);
 	// Load textures
 	ResHelperClass::LoadTexture("textures/sandBG.jpg", GL_FALSE, "backgroundGame");
 	ResHelperClass::LoadTexture("textures/grass.jpg", GL_FALSE, "backgroundMenu");
-	ResHelperClass::LoadTexture("textures/block.png", GL_FALSE, "block");
 	ResHelperClass::LoadTexture("textures/grass.jpg", GL_FALSE, "grass");
 	ResHelperClass::LoadTexture("textures/tiger.png",	GL_TRUE, "tiger");
 	ResHelperClass::LoadTexture("textures/prey.png", GL_TRUE, "prey");
@@ -103,8 +102,8 @@ void Game::Init()
 		GLuint randNum;
 		GLuint randNum2;
 
-		randNum = rand() % 800 + 1;
-		randNum2 = rand() % 600 + 1;
+		randNum = rand() % SCREEN_WIDTH + 1;
+		randNum2 = rand() % SCREEN_HEIGHT + 1;
 		std::cout << "Grass  : " << randNum << " : " << randNum2 << std::endl;
 
 		grass.push_back(Grass(glm::vec2(randNum, randNum2), glm::vec2(50,50), ResHelperClass::GetTexture("grass")));		
@@ -115,8 +114,8 @@ void Game::Init()
 		GLuint randNum;
 		GLuint randNum2;
 
-		randNum = rand() % 800 + 1;
-		randNum2 = rand() % 600 + 1;
+		randNum = rand() % SCREEN_WIDTH + 1;
+		randNum2 = rand() % SCREEN_HEIGHT + 1;
 		std::cout << "Predator  : " << randNum << " : " << randNum2 << std::endl;
 
 		animals.push_back(Predator(glm::vec2(randNum, randNum2), ResHelperClass::GetTexture("tiger"), idCount));
@@ -128,8 +127,8 @@ void Game::Init()
 		GLuint randNum;
 		GLuint randNum2;
 
-		randNum = rand() % 800 + 1;
-		randNum2 = rand() % 600 + 1;
+		randNum = rand() % SCREEN_WIDTH + 1;
+		randNum2 = rand() % SCREEN_HEIGHT + 1;
 		std::cout << "Prey  : " <<randNum << " : " << randNum2 << std::endl;
 
 		animals.push_back(Prey(glm::vec2(randNum, randNum2), ResHelperClass::GetTexture("prey"), idCount));
@@ -137,7 +136,7 @@ void Game::Init()
 	}
 }
 
-void Game::Update(GLfloat dt)
+void Game::Update(GLfloat deltaTime)
 {
 
 	// Check for collisions
@@ -147,11 +146,11 @@ void Game::Update(GLfloat dt)
 
 	for (auto animal = animals.begin(); animal != animals.end(); ++animal)
 	{
-		animal->MoveTo(dt, SCREEN_WIDTH, SCREEN_HEIGHT);
+		animal->MoveTo(deltaTime, SCREEN_WIDTH, SCREEN_HEIGHT);
 		GLfloat num = RandomNumberInt(3, 2);
 
-		animal->DecraseHunger((num/10)*dt);		
-		animal->DecreaseFertility(4 * dt);
+		animal->DecraseHunger((num/10)*deltaTime);		
+		animal->DecreaseFertility(4 * deltaTime);
 	}
 
 	unsigned i = 0;
@@ -181,7 +180,7 @@ void Game::Update(GLfloat dt)
 }
 
 
-void Game::ProcessInput(GLfloat dt)
+void Game::ProcessInput(GLfloat deltaTime)
 {
 	if (this->State == GAME)	{
 		
@@ -200,8 +199,8 @@ void Game::ProcessInput(GLfloat dt)
 			GLuint randNum;
 			GLuint randNum2;
 
-			randNum = rand() % 800 + 1;
-			randNum2 = rand() % 600 + 1;
+			randNum = rand() % SCREEN_WIDTH + 1;
+			randNum2 = rand() % SCREEN_HEIGHT + 1;
 
 			animals.push_back(Prey(glm::vec2(randNum, randNum2), ResHelperClass::GetTexture("prey"), idCount));
 			idCount++;
@@ -227,8 +226,8 @@ void Game::ProcessInput(GLfloat dt)
 			GLuint randNum;
 			GLuint randNum2;
 
-			randNum = rand() % 800 + 1;
-			randNum2 = rand() % 600 + 1;
+			randNum = rand() % SCREEN_WIDTH + 1;
+			randNum2 = rand() % SCREEN_HEIGHT + 1;
 
 			animals.push_back(Predator(glm::vec2(randNum, randNum2), ResHelperClass::GetTexture("tiger"), idCount));
 			idCount++;
@@ -299,7 +298,7 @@ void Game::Render()
 	if (this->State == GAME)
 	{
 		// Draw game background
-		Renderer->RenderSprite(ResHelperClass::GetTexture("backgroundGame"), glm::vec2(0, 0), glm::vec2(SCREEN_WIDTH/2, SCREEN_HEIGHT), 0.0f);
+		Renderer->RenderSprite(ResHelperClass::GetTexture("backgroundGame"), glm::vec2(0, 0), glm::vec2(SCREEN_WIDTH, SCREEN_HEIGHT), 0.0f);
 		
 		for (auto animal = animals.begin(); animal != animals.end(); ++animal)
 		{
@@ -402,6 +401,7 @@ void Game::CheckForCollisions()
 								animals.push_back(Prey(glm::vec2(randNum, randNum2), ResHelperClass::GetTexture("prey"), idCount));
 								SoundEngine->play2D("sounds/prey.wav", GL_FALSE);
 								idCount++;
+
 								animal.Fertile = 30.0f;
 								animal2.Fertile = 30.0f;
 								std::cout << animal.id << " and " << animal2.id << " Prey Spawned" << std::endl;
