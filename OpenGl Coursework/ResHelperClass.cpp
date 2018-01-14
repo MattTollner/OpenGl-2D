@@ -33,7 +33,7 @@ TextureHelperClass ResHelperClass::GetTexture(std::string name)
 	return Textures[name];
 }
 
-void ResHelperClass::Clear()
+void ResHelperClass::ClearRes()
 {
 	// (Properly) delete all shaders	
 	for (auto iter : Shaders)
@@ -45,9 +45,9 @@ void ResHelperClass::Clear()
 
 ShaderHelperClass ResHelperClass::loadShaderFromFile(const GLchar *vertShader, const GLchar *fragShader)
 {
-	// 1. Retrieve the vertex/fragment source code from filePath
-	std::string vertexCode;
-	std::string fragmentCode;
+	//Data from file
+	std::string vertexContent;
+	std::string fragmentContent;
 	try
 	{
 		// Open files
@@ -61,16 +61,16 @@ ShaderHelperClass ResHelperClass::loadShaderFromFile(const GLchar *vertShader, c
 		vertexShaderFile.close();
 		fragmentShaderFile.close();
 		// Convert stream into string
-		vertexCode = vShaderStream.str();
-		fragmentCode = fShaderStream.str();
+		vertexContent = vShaderStream.str();
+		fragmentContent = fShaderStream.str();
 		
 	}
 	catch (std::exception e)
 	{
 		std::cout << "Failed loading shader files" << std::endl;
 	}
-	const GLchar *vShaderCode = vertexCode.c_str();
-	const GLchar *fShaderCode = fragmentCode.c_str();
+	const GLchar *vShaderCode = vertexContent.c_str();
+	const GLchar *fShaderCode = fragmentContent.c_str();
 	// 2. Now create shader object from source code
 	ShaderHelperClass shader;
 	shader.Compile(vShaderCode, fShaderCode);

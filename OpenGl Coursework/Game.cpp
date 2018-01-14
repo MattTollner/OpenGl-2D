@@ -41,7 +41,7 @@ void DeleteAnimal(Animal  animalToDel)
 		}
 		cnt++;
 	}
-	SoundEngine->play2D("audio/roar.wav", GL_FALSE);
+	SoundEngine->play2D("sounds/roar.wav", GL_FALSE);
 	//Deletes pray from list
 	animals.erase(animals.begin() + cnt);
 }
@@ -79,11 +79,11 @@ void Game::Init()
 	ResHelperClass::LoadShader("shaders/sprite.vs", "shaders/sprite.fs", "sprite");
 	// Configure shaders
 	glm::mat4 projection = glm::ortho(0.0f, static_cast<GLfloat>(this->Width), static_cast<GLfloat>(this->Height), 0.0f, -1.0f, 1.0f);
-	ResHelperClass::GetShader("sprite").Use().SetInteger("sprite", 0);
+	ResHelperClass::GetShader("sprite").Use().SetInt("sprite", 0);
 	ResHelperClass::GetShader("sprite").SetMatrix4("projection", projection);
 	// Load textures
-	ResHelperClass::LoadTexture("textures/sandBG.jpg", GL_FALSE, "background");
-	ResHelperClass::LoadTexture("textures/awesomeface.png", GL_TRUE, "face");
+	ResHelperClass::LoadTexture("textures/sandBG.jpg", GL_FALSE, "backgroundGame");
+	ResHelperClass::LoadTexture("textures/grass.jpg", GL_FALSE, "backgroundMenu");
 	ResHelperClass::LoadTexture("textures/block.png", GL_FALSE, "block");
 	ResHelperClass::LoadTexture("textures/grass.jpg", GL_FALSE, "grass");
 	ResHelperClass::LoadTexture("textures/tiger.png",	GL_TRUE, "tiger");
@@ -91,17 +91,12 @@ void Game::Init()
 
 	//Text renderer
 	Text = new TextHelperClass(600, 600);
-	Text->LoadText("font/Organo.ttf", 24);
-
-	//Audio Load
-	//SoundEngine->play2D("audio/breakout.mp3", GL_TRUE);
+	Text->LoadText("fonts/Organo.ttf", 24);
 
 
 	// Set render-specific controls
 	Renderer = new SpriteHelperClass(ResHelperClass::GetShader("sprite"));
-	// Load levels
-	
-	// Configure game objects	
+
 
 	for (unsigned int i = 0; i < 15; i++)
 	{
@@ -257,7 +252,7 @@ void Game::ProcessInput(GLfloat dt)
 
 		if (this->Keys[GLFW_KEY_R] && !this->KeysProcessed[GLFW_KEY_R])
 		{
-			//ADD RAIN SOUND
+
 			for (unsigned int i = 0; i < 5; i++)
 			{
 				GLuint randNum;
@@ -268,6 +263,7 @@ void Game::ProcessInput(GLfloat dt)
 				std::cout << "Grass  : " << randNum << " : " << randNum2 << std::endl;
 
 				grass.push_back(Grass(glm::vec2(randNum, randNum2), glm::vec2(50, 50), ResHelperClass::GetTexture("grass")));
+				SoundEngine->play2D("sounds/RainSound.wav", GL_FALSE);
 			}
 
 			this->KeysProcessed[GLFW_KEY_R] = GL_TRUE;
@@ -302,8 +298,8 @@ void Game::Render()
 	GLuint preyCount = 0;
 	if (this->State == GAME)
 	{
-		// Draw background
-		Renderer->RenderSprite(ResHelperClass::GetTexture("background"), glm::vec2(0, 0), glm::vec2(SCREEN_WIDTH/2, SCREEN_HEIGHT), 0.0f);
+		// Draw game background
+		Renderer->RenderSprite(ResHelperClass::GetTexture("backgroundGame"), glm::vec2(0, 0), glm::vec2(SCREEN_WIDTH/2, SCREEN_HEIGHT), 0.0f);
 		
 		for (auto animal = animals.begin(); animal != animals.end(); ++animal)
 		{
@@ -336,8 +332,8 @@ void Game::Render()
 
 	if (this->State == MENU)
 	{
-		// Draw background
-		Renderer->RenderSprite(ResHelperClass::GetTexture("background"), glm::vec2(0, 0), glm::vec2(this->Width, this->Height), 0.0f);
+		// Draw menu background
+		Renderer->RenderSprite(ResHelperClass::GetTexture("backgroundMenu"), glm::vec2(0, 0), glm::vec2(this->Width, this->Height), 0.0f);
 
 		Text->RenderText("Artificial Life Simulation", Width / 4 - 75, Height / 4, 1.3f);
 		Text->RenderText("P to spawn Prey  O to remove Prey", Width / 4 - 60, Height / 3, 0.75f);
@@ -404,7 +400,7 @@ void Game::CheckForCollisions()
 								randNum = rand() % 800 + 1;
 								randNum2 = rand() % 600 + 1;
 								animals.push_back(Prey(glm::vec2(randNum, randNum2), ResHelperClass::GetTexture("prey"), idCount));
-								SoundEngine->play2D("audio/prey.wav", GL_FALSE);
+								SoundEngine->play2D("sounds/prey.wav", GL_FALSE);
 								idCount++;
 								animal.Fertile = 30.0f;
 								animal2.Fertile = 30.0f;
@@ -458,7 +454,7 @@ void Game::CheckForCollisions()
 										randNum = rand() % 800 + 1;
 										randNum2 = rand() % 600 + 1;
 										animals.push_back(Predator(glm::vec2(randNum, randNum2), ResHelperClass::GetTexture("tiger"), idCount));
-										SoundEngine->play2D("audio/predator.wav", GL_TRUE);
+										SoundEngine->play2D("sounds/predator.wav", GL_FALSE);
 										idCount++;
 										animal.Fertile = 30.0f;
 										animal2.Fertile = 30.0f;

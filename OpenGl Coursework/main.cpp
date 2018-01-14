@@ -108,7 +108,7 @@ int main(int argc, char *argv[])
 	}
 
 	// Delete all resources as loaded using the resource manager
-	ResHelperClass::Clear();
+	ResHelperClass::ClearRes();
 
 	glfwTerminate();
 	return 0;

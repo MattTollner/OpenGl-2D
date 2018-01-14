@@ -10,7 +10,7 @@ ShaderHelperClass &ShaderHelperClass::Use()
 
 void ShaderHelperClass::Compile(const GLchar* vertexShader, const GLchar* fragmentShader)
 {
-	GLuint sVertex, sFragment, gShader;
+	GLuint sVertex, sFragment;
 	// Vertex Shader
 	sVertex = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(sVertex, 1, &vertexShader, NULL);
@@ -41,48 +41,20 @@ void ShaderHelperClass::Compile(const GLchar* vertexShader, const GLchar* fragme
 //		this->Use();
 //	glUniform1f(glGetUniformLocation(this->ID, name), value);
 //}
-void ShaderHelperClass::SetInteger(const GLchar *name, GLint value, GLboolean useShader)
+void ShaderHelperClass::SetInt(const GLchar *name, GLint value, GLboolean useShader)
 {
 	if (useShader)
 		this->Use();
 	glUniform1i(glGetUniformLocation(this->ID, name), value);
 }
-//void Shader::SetVector2f(const GLchar *name, GLfloat x, GLfloat y, GLboolean useShader)
-//{
-//	if (useShader)
-//		this->Use();
-//	glUniform2f(glGetUniformLocation(this->ID, name), x, y);
-//}
-//void Shader::SetVector2f(const GLchar *name, const glm::vec2 &value, GLboolean useShader)
-//{
-//	if (useShader)
-//		this->Use();
-//	glUniform2f(glGetUniformLocation(this->ID, name), value.x, value.y);
-//}
-//void ShaderHelperClass::SetVector3f(const GLchar *name, GLfloat x, GLfloat y, GLfloat z, GLboolean useShader)
-//{
-//	if (useShader)
-//		this->Use();
-//	glUniform3f(glGetUniformLocation(this->ID, name), x, y, z);
-//}
+
 void  ShaderHelperClass::SetVector3f(const GLchar *name, const glm::vec3 &value, GLboolean useShader)
 {
 	if (useShader)
 		this->Use();
 	glUniform3f(glGetUniformLocation(this->ID, name), value.x, value.y, value.z);
 }
-//void Shader::SetVector4f(const GLchar *name, GLfloat x, GLfloat y, GLfloat z, GLfloat w, GLboolean useShader)
-//{
-//	if (useShader)
-//		this->Use();
-//	glUniform4f(glGetUniformLocation(this->ID, name), x, y, z, w);
-//}
-//void Shader::SetVector4f(const GLchar *name, const glm::vec4 &value, GLboolean useShader)
-//{
-//	if (useShader)
-//		this->Use();
-//	glUniform4f(glGetUniformLocation(this->ID, name), value.x, value.y, value.z, value.w);
-//}
+
 void ShaderHelperClass::SetMatrix4(const GLchar *name, const glm::mat4 &matrix, GLboolean useShader)
 {
 	if (useShader)

@@ -18,7 +18,7 @@ TextHelperClass::TextHelperClass(GLuint width, GLuint height)
 	// Load and configure shader
 	this->TextShader = ResHelperClass::LoadShader("shaders/text.vs", "shaders/text.fs", "text");
 	this->TextShader.SetMatrix4("projection", glm::ortho(0.0f, static_cast<GLfloat>(width), static_cast<GLfloat>(height), 0.0f), GL_TRUE);
-	this->TextShader.SetInteger("text", 0);
+	this->TextShader.SetInt("text", 0);
 	// Configure VAO/VBO for texture quads
 	glGenVertexArrays(1, &this->VAO);
 	glGenBuffers(1, &this->VBO);
