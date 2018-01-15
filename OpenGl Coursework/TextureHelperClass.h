@@ -13,13 +13,7 @@ public:
 	// Texture Format
 	GLuint internalF; 
 	GLuint imageF; 
-			
-	//Texture wrapping
-	GLuint wrapS;
-	GLuint wrapT; 
-	//Filters if texture smaller/bigger then screen
-	GLuint textureMin; 
-	GLuint textureMax; 
+
 					   
 	TextureHelperClass();
 	void GenerateTex(GLuint width, GLuint height, unsigned char* data);

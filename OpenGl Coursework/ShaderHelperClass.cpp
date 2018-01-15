@@ -1,13 +1,14 @@
 #include "ShaderHelperClass.h"
-
 #include <iostream>
 
+//Sets program object as current active shader prog
 ShaderHelperClass &ShaderHelperClass::UseShader()
 {
 	glUseProgram(this->ID);
 	return *this;
 }
 
+//Compiles & checks for errors then links
 void ShaderHelperClass::Compile(const GLchar* vertexShader, const GLchar* fragmentShader)
 {
 	GLuint vertexShade, fragmentShade;
@@ -34,6 +35,7 @@ void ShaderHelperClass::Compile(const GLchar* vertexShader, const GLchar* fragme
 
 }
 
+//Sets unifroms values in the shader files
 void ShaderHelperClass::SetInt(const GLchar *name, GLint value, GLboolean useShader)
 {
 	if (useShader)
@@ -64,12 +66,12 @@ void ShaderHelperClass::SetMatrix4(const GLchar *name, const glm::mat4 &matrix, 
 //Checks for shader errors
 void ShaderHelperClass::checkShaderError(GLuint object, std::string type)
 {
-	GLint success;
+	GLint result;
 	GLchar infoLog[1024];
 	if (type != "Prog")
 	{
-		glGetShaderiv(object, GL_COMPILE_STATUS, &success);
-		if (!success)
+		glGetShaderiv(object, GL_COMPILE_STATUS, &result);
+		if (!result)
 		{
 			glGetShaderInfoLog(object, 1024, NULL, infoLog);
 			std::cout << "Shader error - Compile : Type: " << type << "\n" << infoLog << "\n" << std::endl;
@@ -77,8 +79,8 @@ void ShaderHelperClass::checkShaderError(GLuint object, std::string type)
 	}
 	else
 	{
-		glGetProgramiv(object, GL_LINK_STATUS, &success);
-		if (!success)
+		glGetProgramiv(object, GL_LINK_STATUS, &result);
+		if (!result)
 		{
 			glGetProgramInfoLog(object, 1024, NULL, infoLog);
 			std::cout << "Shader error - Link : Type: " << type << "\n" << infoLog << "\n" << std::endl;

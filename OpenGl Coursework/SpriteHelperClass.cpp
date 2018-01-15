@@ -1,17 +1,19 @@
 
 #include "SpriteHelperClass.h"
-
+//Init setup
 SpriteHelperClass::SpriteHelperClass(ShaderHelperClass &shader)
 {
 	this->shader = shader;
 	this->quadSetup();
 }
 
+//Clean up
 SpriteHelperClass::~SpriteHelperClass()
 {
 	glDeleteVertexArrays(1, &this->qVAO);
 }
 
+//Deals with matrix transformations then renders textured quad to screen
 void SpriteHelperClass::RenderSprite(TextureHelperClass &texture, glm::vec2 position, glm::vec2 scale, GLfloat rotate, glm::vec3 colour)
 {
 	
@@ -19,7 +21,7 @@ void SpriteHelperClass::RenderSprite(TextureHelperClass &texture, glm::vec2 posi
 	glm::mat4 model;
 	model = glm::translate(model, glm::vec3(position, 0.0f));  
 
-	// Centers origin for rotation
+	//Centers origin for rotation
 	model = glm::translate(model, glm::vec3(0.5f * scale.x, 0.5f * scale.y, 0.0f));
 	model = glm::rotate(model, rotate, glm::vec3(0.0f, 0.0f, 1.0f)); 
 	//Resets origin to top left
@@ -28,23 +30,24 @@ void SpriteHelperClass::RenderSprite(TextureHelperClass &texture, glm::vec2 posi
 
 	this->shader.SetMatrix4("model", model);
 
-	// Render textured quad
-	this->shader.SetVector3f("spriteColor", colour);
+	//Renders textured quad
+	this->shader.SetVector3f("spriteColour", colour);
 
 	glActiveTexture(GL_TEXTURE0);
 	texture.Bind();
 
+	//Draws textured quad
 	glBindVertexArray(this->qVAO);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 	glBindVertexArray(0);
 }
-#
-//Creates quad 
+
+//Creates quad that sprites sit on
 void SpriteHelperClass::quadSetup()
 {
-
+	//Pos,TexCoords
 	GLfloat vertices[] = {
-		0.0f, 1.0f, 0.0f, 1.0f, //tri 
+		0.0f, 1.0f, 0.0f, 1.0f, 
 		1.0f, 0.0f, 1.0f, 0.0f,
 		0.0f, 0.0f, 0.0f, 0.0f,
 
@@ -55,7 +58,7 @@ void SpriteHelperClass::quadSetup()
 
 	GLuint VBO;
 	glGenVertexArrays(1, &this->qVAO); //Creates 1 vertex array object
-	glGenBuffers(1, &VBO); // Creates 1 vertex buffer
+	glGenBuffers(1, &VBO); //Creates 1 vertex buffer
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);

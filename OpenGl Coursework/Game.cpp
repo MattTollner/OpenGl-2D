@@ -72,16 +72,16 @@ Game::~Game()
 
 void Game::Init()
 {
-	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+	//Memory Leak detection
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);	
 	
-	
-	// Load shaders
 	ResHelperClass::LoadShader("shaders/sprite.vs", "shaders/sprite.fs", "sprite");
-	// Configure shaders
+	//Configure shaders
 	glm::mat4 projection = glm::ortho(0.0f, static_cast<GLfloat>(this->Width), static_cast<GLfloat>(this->Height), 0.0f, -1.0f, 1.0f);
+	//Sets uniforms in shaders
 	ResHelperClass::GetShader("sprite").UseShader().SetInt("sprite", 0);
 	ResHelperClass::GetShader("sprite").SetMatrix4("projection", projection);
-	// Load textures
+
 	ResHelperClass::LoadTexture("textures/sandBG.jpg", GL_FALSE, "backgroundGame");
 	ResHelperClass::LoadTexture("textures/grass.jpg", GL_FALSE, "backgroundMenu");
 	ResHelperClass::LoadTexture("textures/grass.jpg", GL_FALSE, "grass");
@@ -91,9 +91,6 @@ void Game::Init()
 	//Text renderer
 	Text = new TextHelperClass(600, 600);
 	Text->LoadText("fonts/Organo.ttf", 24);
-
-
-	// Set render-specific controls
 	Renderer = new SpriteHelperClass(ResHelperClass::GetShader("sprite"));
 
 

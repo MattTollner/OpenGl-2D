@@ -13,8 +13,8 @@ class ResHelperClass
 {
 public:
 	//Arrays
-	static std::map<std::string,ShaderHelperClass>   Shaders;
-	static std::map<std::string, TextureHelperClass> Textures;
+	static std::map<std::string,ShaderHelperClass>   ShadersList;
+	static std::map<std::string, TextureHelperClass> TexturesList;
 
 	static ShaderHelperClass   LoadShader(const GLchar *vertexShader, const GLchar *fragmentShader,  std::string identifier);
 	static ShaderHelperClass   GetShader(std::string name); 	//Gets shader from array
@@ -26,6 +26,6 @@ public:
 
 private:
 	ResHelperClass() { }
-	static ShaderHelperClass    loadShaderFromFile(const GLchar *vertexShader, const GLchar *fragmentShader);
-	static TextureHelperClass loadTextureFromFile(const GLchar *file, GLboolean alpha);
+	static ShaderHelperClass    parseShaderFiles(const GLchar *vertexShader, const GLchar *fragmentShader);
+	static TextureHelperClass parseTextureFiles(const GLchar *file, GLboolean alpha);
 };

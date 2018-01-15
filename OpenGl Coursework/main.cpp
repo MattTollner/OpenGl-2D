@@ -66,23 +66,22 @@ int main(int argc, char *argv[])
 	Simulation.Init();
 
 
-	GLfloat deltaTime = 0.0f;
-	GLfloat lastFrame = 0.0f;
+
 
 	// Start Game within Menu State
-	Simulation.State = GAME;
+	Simulation.State = MENU;
 
 
 
-
+	GLfloat deltaTime = 0.0f;
+	GLfloat lFrame = 0.0f;
 	while (!glfwWindowShouldClose(window))
 	{
-
-		
+				
 		//Delta time calc
 		GLfloat curFrame = glfwGetTime();
-		deltaTime = curFrame - lastFrame;
-		lastFrame = curFrame;
+		deltaTime = curFrame - lFrame;
+		lFrame = curFrame;
 		glfwPollEvents();
 
 	

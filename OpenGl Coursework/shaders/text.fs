@@ -1,12 +1,14 @@
 #version 330 core
-in vec2 TexCoords;
-out vec4 color;
+in vec2 textureC;
+out vec4 colour;
 
+//Text contents
 uniform sampler2D text;
-uniform vec3 textColor;
+//Colour of text
+uniform vec3 textColour;
 
 void main()
 {    
-    vec4 sampled = vec4(1.0, 1.0, 1.0, texture(text, TexCoords).r);
-    color = vec4(textColor, 1.0) * sampled;
+    vec4 sampled = vec4(1.0, 1.0, 1.0, texture(text, textureC).r);
+    colour = vec4(textColour, 1.0) * sampled;
 }  

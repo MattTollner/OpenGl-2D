@@ -6,12 +6,15 @@
 #include "TextHelperClass.h"
 #include "ShaderHelperClass.h"
 
-/// Holds all state information relevant to a character as loaded using FreeType
+// Holds character information
 struct Character {
-	GLuint TextureID;   // ID handle of the glyph texture
-	glm::ivec2 Size;    // Size of glyph
-	glm::ivec2 Bearing; // Offset from baseline to left/top of glyph
-	GLuint Advance;     // Horizontal offset to advance to next glyph
+	GLuint TextureID;
+	//Size of glyph
+	glm::ivec2 Size; 
+	//Baseline offset to top of glyph
+	glm::ivec2 Bearing;
+	//Offset of where to put next character
+	GLuint Advance;    
 };
 
 
@@ -23,9 +26,9 @@ public:
 	TextHelperClass();
 	~TextHelperClass();
 	TextHelperClass(GLuint width, GLuint height);
-	// Compiles characters from font
+	//Loads characters from freetype fnt
 	void LoadText(std::string font, GLuint fontSize);
-	//Creates the string
+	//Puts everytihbgn together and renders the string
 	void RenderText(std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color = glm::vec3(1.0f));
 private:
 	GLuint VBO, VAO;
